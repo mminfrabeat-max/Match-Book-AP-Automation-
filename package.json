@@ -1,0 +1,29 @@
+{
+  "name": "match-book",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Demo: scan PDF invoices from a folder, validate against SAP data, park MIRO (simulated SAP)",
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env.local src/server.js",
+    "start:sap": "node --env-file-if-exists=.env.local src/server.js --sap rfc",
+    "samples": "node scripts/make-samples.js",
+    "demo": "node scripts/demo.js",
+    "sap:invoice": "node --env-file-if-exists=.env.local scripts/sap-invoice.js",
+    "reset": "node scripts/reset.js",
+    "sap:testpack": "node --env-file-if-exists=.env.local scripts/sap-testpack.js",
+    "teams:test": "node --env-file-if-exists=.env.local scripts/teams-test.js",
+    "scans": "node scripts/make-scans.js",
+    "teams:app": "node scripts/teams-app.js",
+    "sap:pay": "node --env-file-if-exists=.env.local scripts/sap-pay.js",
+    "mails": "node scripts/sample-mails.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.3.0",
+    "jsqr": "^1.4.0",
+    "pdfjs-dist": "^5.4.296",
+    "pdfkit": "^0.17.2",
+    "qrcode": "^1.5.4",
+    "tesseract.js": "^5.1.1"
+  }
+}

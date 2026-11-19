@@ -1,0 +1,1061 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AP Invoice Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23155e75'/%3E%3Cpath d='M9 22V10h9a4 4 0 010 8h-9' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='22' cy='22' r='2.6' fill='%235eead4'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f5f6fa; --surface:#ffffff; --raised:#f6f6f9; --sunken:#eef0f6; --line:#e4e6ef; --line-2:#d3d7e4;
+  --fg:#16152b; --fg-2:#4a4a63; --muted:#7c7d94;
+  --brand:#4b3bc4; --brand-2:#2f5bd8; --brand-ink:#ffffff; --brand-soft:#ecebfb; --brand-glow:#7fe7f5;
+  --grad:linear-gradient(120deg,#6a2fa8 0%,#4b3bc4 45%,#2f4ec9 100%); --gold:#f2b705; --ib-blue:#0094c8; --ib-red:#e31e24;
+  --series:#4f5fe0;
+  --good:#0f8a3c; --good-bg:#e5f5ea; --warn:#a86500; --warn-bg:#fdf1dc; --bad:#c22f2f; --bad-bg:#fbe7e7; --info:#2a5fb0; --info-bg:#e6eefa; --neutral-bg:#eef1f4;
+  --shadow:0 1px 2px rgba(15,27,42,.06),0 4px 16px rgba(15,27,42,.06); --shadow-lg:0 12px 40px rgba(15,27,42,.18);
+  --r:12px; --r-sm:8px;
+  --ui:"Roboto","Segoe UI Variable","Segoe UI",system-ui,-apple-system,sans-serif; --mono:"Cascadia Mono",Consolas,ui-monospace,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e0d1c; --surface:#16152a; --raised:#1b1a33; --sunken:#121126; --line:#2a2947; --line-2:#363558;
+  --fg:#e6edf5; --fg-2:#aab8c8; --muted:#7f8ea0;
+  --brand:#8b7cf6; --brand-2:#6b8cff; --brand-ink:#0d0b24; --brand-soft:#231f4a; --brand-glow:#7fe7f5; --series:#7a88f0; --grad:linear-gradient(120deg,#5a2894 0%,#3f33a8 45%,#2a44ad 100%); --gold:#f5c542; --ib-blue:#29b6e8; --ib-red:#ff4b50;
+  --good:#46c37a; --good-bg:#10301f; --warn:#e8a73c; --warn-bg:#33260f; --bad:#f07373; --bad-bg:#3a1717; --info:#7fb0f0; --info-bg:#13243d; --neutral-bg:#1b2633;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25); --shadow-lg:0 12px 40px rgba(0,0,0,.5); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e0d1c; --surface:#16152a; --raised:#1b1a33; --sunken:#121126; --line:#2a2947; --line-2:#363558;
+  --fg:#e6edf5; --fg-2:#aab8c8; --muted:#7f8ea0;
+  --brand:#8b7cf6; --brand-2:#6b8cff; --brand-ink:#0d0b24; --brand-soft:#231f4a; --brand-glow:#7fe7f5; --series:#7a88f0; --grad:linear-gradient(120deg,#5a2894 0%,#3f33a8 45%,#2a44ad 100%); --gold:#f5c542; --ib-blue:#29b6e8; --ib-red:#ff4b50;
+  --good:#46c37a; --good-bg:#10301f; --warn:#e8a73c; --warn-bg:#33260f; --bad:#f07373; --bad-bg:#3a1717; --info:#7fb0f0; --info-bg:#13243d; --neutral-bg:#1b2633;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25); --shadow-lg:0 12px 40px rgba(0,0,0,.5); color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 var(--ui);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--brand-2)}
+.mono{font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)} .small{font-size:12.5px}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
+svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- login ---------- */
+#app{min-height:100vh}
+.login{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(360px,.9fr)}
+@media (max-width:860px){.login{grid-template-columns:minmax(0,1fr)}.login .hero{display:none}}
+.hero{position:relative;overflow:hidden;color:#eafcff;padding:56px;display:flex;flex-direction:column;justify-content:space-between;
+  background:radial-gradient(1200px 600px at 10% 0%,#1d7f99 0%,transparent 60%),radial-gradient(900px 500px at 100% 100%,#0b4a5e 0%,transparent 60%),linear-gradient(135deg,#0b3c4c,#0e5a70)}
+.hero h1{font-size:40px;line-height:1.1;margin:0 0 12px;letter-spacing:-.02em;text-wrap:balance}
+.hero p{max-width:46ch;color:#bfe9f3;margin:0;font-size:16px}
+.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:40px;max-width:640px}
+.flow div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:12px 10px;font-size:12.5px;backdrop-filter:blur(4px)}
+.flow b{display:block;font-size:13px;color:#fff;margin-bottom:2px}
+.flow div:nth-child(5){background:rgba(94,234,212,.18);border-color:rgba(94,234,212,.5)}
+.hero small{color:#9fd3e0}
+.brandmark{display:flex;align-items:center;gap:12px;font-weight:700;font-size:18px;letter-spacing:-.01em}
+.logo{width:38px;height:38px;border-radius:10px;background:var(--brand);color:#fff;display:grid;place-items:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
+.hero .logo{background:rgba(255,255,255,.12)}
+.form-side{display:grid;place-items:center;padding:32px 16px;background:var(--surface)}
+.card-login{width:min(380px,100%)}
+.card-login h2{margin:0 0 6px;font-size:24px;letter-spacing:-.01em}
+.field{display:grid;gap:6px;margin-top:16px}
+.field label{font-size:12.5px;font-weight:600;color:var(--fg-2)}
+.input{width:100%;padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;background:var(--surface);transition:border-color .15s,box-shadow .15s}
+.input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px color-mix(in srgb,var(--brand-2) 22%,transparent)}
+.err{color:var(--bad);font-size:13px;margin-top:12px;min-height:18px}
+.demo-users{margin-top:22px;padding:12px;border-radius:10px;background:var(--raised);border:1px dashed var(--line-2);font-size:12.5px;color:var(--fg-2)}
+.demo-users code{font-family:var(--mono);font-size:12px}
+.demo-users summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px}
+.demo-users summary::-webkit-details-marker{display:none}
+.demo-users summary::before{content:"›";display:inline-block;font-weight:700;transition:transform .15s}
+.demo-users[open] summary::before{transform:rotate(90deg)}
+.demo-users p{margin:10px 0 8px}
+.demo-users .pw{background:var(--brand-soft);color:var(--brand);padding:2px 6px;border-radius:6px;font-weight:700}
+.demo-tbl{width:100%;border-collapse:collapse;font-size:12.5px;background:var(--surface);border-radius:8px;overflow:hidden}
+.demo-tbl th{font-size:11px;padding:6px 8px;position:static}
+.demo-tbl td{padding:6px 8px;border-bottom:1px solid var(--line)}
+.demo-tbl tr[data-u]{cursor:pointer}
+.demo-tbl tr[data-u]:hover td,.demo-tbl tr[data-u]:focus td{background:var(--brand-soft)}
+.card-login{width:min(460px,100%)}
+
+/* ---------- buttons, chips ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:8px 14px;border-radius:10px;border:1px solid var(--line-2);background:var(--surface);cursor:pointer;font-weight:600;font-size:13.5px;white-space:nowrap;transition:background .15s,border-color .15s,transform .05s}
+.btn:hover{border-color:var(--brand-2)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.btn.primary:hover{background:var(--brand-2);border-color:var(--brand-2)}
+.btn.danger{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,var(--line))}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--sunken)}
+.btn.block{width:100%;padding:11px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;color:var(--c);background:var(--cb)}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-PARKED,.s-POSTED,.s-PAID,.s-PASS,.s-good{--c:var(--good);--cb:var(--good-bg)}
+.s-READY,.s-accent,.s-INFO{--c:var(--info);--cb:var(--info-bg)}
+.s-REVIEW,.s-PART_PAID,.s-WARN,.s-warn{--c:var(--warn);--cb:var(--warn-bg)}
+.s-EXCEPTION,.s-REJECTED,.s-BLOCK,.s-bad{--c:var(--bad);--cb:var(--bad-bg)}
+.s-PROCESSING,.s-NA,.s-neutral{--c:var(--fg-2);--cb:var(--neutral-bg)}
+
+/* ---------- app shell ---------- */
+.shell{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100%}
+@media (max-width:900px){.shell{grid-template-columns:minmax(0,1fr)}.side{position:fixed;inset:0 auto 0 0;width:260px;z-index:30;transform:translateX(-100%);transition:transform .2s}.side.open{transform:none;box-shadow:var(--shadow-lg)}.menu-btn{display:inline-flex!important}}
+.side{background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 12px;gap:4px;position:sticky;top:0;height:100vh}
+.side .brandmark{padding:4px 8px 16px;font-size:15.5px}
+.side .brandmark small{display:block;font-size:11.5px;font-weight:500;color:var(--muted)}
+.nav{all:unset;display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:10px;color:var(--fg-2);cursor:pointer;font-weight:500}
+.nav:hover{background:var(--sunken);color:var(--fg)}
+.nav[aria-current="page"]{background:var(--brand-soft);color:var(--brand);font-weight:650}
+.nav .badge{margin-left:auto;font-size:11px;font-weight:700;background:var(--brand);color:var(--brand-ink);border-radius:999px;padding:1px 7px}
+.side .spacer{flex:1}
+.side .sys{border:1px solid var(--line);border-radius:10px;padding:10px;font-size:12px;color:var(--fg-2);display:grid;gap:4px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;background:var(--muted)}
+.dot.live{background:var(--good);box-shadow:0 0 0 3px color-mix(in srgb,var(--good) 25%,transparent)}
+.dot.sim{background:var(--warn)}
+.main{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:12px 24px;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top h1{font-size:19px;margin:0;letter-spacing:-.01em}
+.top .sub{color:var(--muted);font-size:12.5px}
+.top .grow{flex:1}
+.menu-btn{display:none}
+.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;color:var(--brand-ink);background:linear-gradient(135deg,var(--brand),var(--brand-2))}
+.usermenu{position:relative}
+.usermenu .pop{position:absolute;right:0;top:44px;width:260px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-lg);padding:8px;display:grid;gap:2px}
+.usermenu .pop .who{padding:8px 10px 10px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.content{padding:24px;display:grid;gap:20px;max-width:1500px;width:100%}
+@media (max-width:600px){.content{padding:16px}.top{padding:12px 16px}}
+
+/* ---------- cards, grids ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);min-width:0}
+.card-h{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.card-h h3{margin:0;font-size:14.5px}
+.card-h .grow{flex:1}
+.card-b{padding:16px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+.kpi{padding:16px;display:grid;gap:6px;position:relative;overflow:hidden}
+.kpi .l{font-size:12.5px;color:var(--fg-2);display:flex;align-items:center;gap:8px}
+.kpi .v{font-size:28px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.kpi .h{font-size:12px;color:var(--muted)}
+.kpi .ico{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width:1100px){.grid3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:800px){.grid2,.grid3{grid-template-columns:minmax(0,1fr)}}
+.welcome{padding:22px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;
+  background:linear-gradient(120deg,var(--brand-soft),var(--surface) 70%);border:1px solid var(--line);border-radius:var(--r)}
+.welcome h2{margin:0;font-size:22px;letter-spacing:-.01em}
+.welcome p{margin:4px 0 0;color:var(--fg-2)}
+
+/* tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.tile{display:flex;flex-direction:column}
+.tile .card-h{border-bottom:0;padding-bottom:6px;align-items:flex-start}
+.tile .count{font-size:26px;font-weight:700;line-height:1;margin-left:auto;font-variant-numeric:tabular-nums}
+.tile .tone{width:4px;align-self:stretch;border-radius:4px;background:var(--c)}
+.tile ul{list-style:none;margin:0;padding:0 8px 10px}
+.tile li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px;border-radius:8px;cursor:pointer}
+.tile li:hover{background:var(--sunken)}
+.tile li .t{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile li .s{grid-column:1/-1;font-size:12px;color:var(--muted)}
+.tile .empty{padding:6px 16px 18px;color:var(--muted);font-size:13px;display:flex;align-items:center;gap:8px}
+
+/* tables */
+.tbl{overflow:auto;border-radius:0 0 var(--r) var(--r)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:11.5px;font-weight:650;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:var(--raised);position:sticky;top:0;white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--raised)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;background:var(--sunken);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{all:unset;cursor:pointer;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--fg-2)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:var(--shadow)}
+.search{position:relative}
+.search input{padding-left:34px;width:260px}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.drop{border:2px dashed var(--line-2);border-radius:var(--r);padding:16px;text-align:center;color:var(--fg-2);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;transition:background .15s,border-color .15s;cursor:pointer}
+.drop.on{border-color:var(--brand-2);background:var(--brand-soft)}
+
+/* invoice drawer */
+.scrim{position:fixed;inset:0;background:rgba(8,15,24,.45);z-index:40;animation:fade .15s}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(1120px,100%);background:var(--bg);z-index:41;display:grid;grid-template-rows:auto auto 1fr;box-shadow:var(--shadow-lg);animation:slide .2s ease-out}
+@keyframes slide{from{transform:translateX(30px);opacity:.5}to{transform:none;opacity:1}}
+@keyframes fade{from{opacity:0}}
+@media (prefers-reduced-motion:reduce){.drawer,.scrim{animation:none}}
+.dhead{background:var(--surface);padding:18px 22px 0;border-bottom:1px solid var(--line);display:grid;gap:12px}
+.dtitle{display:flex;gap:12px;align-items:flex-start}
+.dtitle h2{margin:0;font-size:20px;letter-spacing:-.01em}
+.facts{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:12.5px;color:var(--muted);margin-top:4px}
+.facts b{color:var(--fg);font-weight:600}
+.tabs{display:flex;gap:2px;overflow-x:auto}
+.tabs button{all:unset;cursor:pointer;padding:10px 14px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--brand);border-color:var(--brand)}
+.dbody{overflow:auto;padding:20px 22px;display:grid;gap:16px;align-content:start}
+.banner{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:var(--r);background:var(--cb);border:1px solid color-mix(in srgb,var(--c) 35%,transparent)}
+.banner h3{margin:0;font-size:15px;color:var(--c)}
+.banner p{margin:2px 0 0;font-size:13px;color:var(--fg-2)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.qty{width:96px;padding:7px 9px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface)}
+/* agent stepper */
+.stepper{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.step{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:12.5px;font-weight:600;color:var(--fg-2)}
+.step i{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:11px;color:#fff;background:var(--c,var(--muted))}
+.step.ok{--c:var(--good)} .step.warn{--c:var(--warn)} .step.bad{--c:var(--bad)} .step.wait{--c:var(--line-2)}
+.arrow{color:var(--line-2)}
+.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (max-width:800px){.checks{grid-template-columns:minmax(0,1fr)}}
+.chk{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:2px 10px;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--c)}
+.chk .n{font-family:var(--mono);font-size:12px;color:var(--muted);padding-top:1px}
+.chk .t{font-weight:600;font-size:13px}
+.chk .d{grid-column:2/-1;font-size:12.5px;color:var(--fg-2)}
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.kv div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kv span{display:block;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.kv b{font-weight:600;font-size:13.5px;word-break:break-word}
+.conf{display:inline-block;width:46px;height:5px;border-radius:3px;background:var(--sunken);overflow:hidden;vertical-align:middle;margin-right:6px}
+.conf i{display:block;height:100%;background:var(--good)} .conf i.lo{background:var(--warn)}
+.tl{display:grid;gap:0}
+.tl .e{display:grid;grid-template-columns:72px 18px minmax(0,1fr);gap:10px;padding:2px 0}
+.tl .e .t{font-family:var(--mono);font-size:11.5px;color:var(--muted);padding-top:2px;text-align:right}
+.tl .e .m{position:relative}
+.tl .e .m::before{content:"";position:absolute;left:5px;top:6px;width:8px;height:8px;border-radius:50%;background:var(--brand-2)}
+.tl .e .m::after{content:"";position:absolute;left:8px;top:16px;bottom:-6px;width:2px;background:var(--line)}
+.tl .e:last-child .m::after{display:none}
+.tl .e .x{padding-bottom:10px;font-size:13px}
+.tl .e .x b{display:block;font-size:12px;color:var(--brand)}
+pre{margin:0;font:12px/1.5 var(--mono);background:var(--sunken);border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;max-height:420px}
+iframe.pdf{width:100%;height:72vh;border:1px solid var(--line);border-radius:10px;background:#fff}
+.note{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface);font-size:13px;display:grid;gap:4px}
+.note .h{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.note .x{white-space:pre-wrap}
+.warnbox{border-radius:10px;padding:10px 12px;background:var(--warn-bg);color:var(--fg);font-size:13px;border:1px solid color-mix(in srgb,var(--warn) 35%,transparent)}
+.fold{display:block}
+.fold>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary::after{content:"▸";margin-left:auto;color:var(--muted);transition:transform .15s}
+.fold[open]>summary::after{transform:rotate(90deg)}
+.okbox{border-radius:10px;padding:10px 12px;background:var(--good-bg);color:var(--fg);font-size:13px;border:1px solid color-mix(in srgb,var(--good) 35%,transparent);display:flex;gap:8px;align-items:center}
+
+/* charts */
+.bars{display:grid;gap:10px}
+.bar{display:grid;grid-template-columns:minmax(110px,180px) minmax(0,1fr) 44px;gap:10px;align-items:center;font-size:13px}
+.bar .track{height:10px;background:var(--sunken);border-radius:4px;overflow:hidden}
+.bar .fill{height:100%;background:var(--series);border-radius:0 4px 4px 0;min-width:2px}
+.bar b{text-align:right;font-variant-numeric:tabular-nums}
+.cols{display:flex;align-items:flex-end;gap:6px;height:160px;padding-top:10px;border-bottom:1px solid var(--line)}
+.cols .c{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%;position:relative}
+.cols .c .f{width:min(28px,70%);background:var(--series);border-radius:4px 4px 0 0;min-height:2px}
+.cols .c:hover .f{filter:brightness(1.15)}
+.cols .c .lab{font-size:11px;color:var(--muted);position:absolute;bottom:-20px;white-space:nowrap}
+.tip{position:fixed;z-index:60;pointer-events:none;background:var(--fg);color:var(--bg);padding:6px 9px;border-radius:8px;font-size:12px;box-shadow:var(--shadow-lg)}
+/* agents */
+.agents{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.agent{padding:14px;display:grid;gap:6px}
+.agent .top2{display:flex;align-items:center;gap:10px}
+.agent .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand)}
+.agent b{font-size:13.5px}
+.agent p{margin:0;font-size:12.5px;color:var(--fg-2)}
+.agent .n{font-size:12px;color:var(--muted)}
+/* modal, toast */
+.modal{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(8,15,24,.5);padding:16px}
+.modal .box{width:min(480px,100%);background:var(--surface);border-radius:16px;box-shadow:var(--shadow-lg);padding:20px;display:grid;gap:12px}
+.modal h3{margin:0}
+textarea.input{min-height:90px;resize:vertical}
+.offline{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:90;background:var(--warn-bg);color:var(--fg);border:1px solid var(--warn);padding:6px 14px;border-radius:999px;font-size:13px;font-weight:600;box-shadow:var(--shadow-lg)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:80;background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;box-shadow:var(--shadow-lg);max-width:calc(100% - 32px)}
+.empty-state{padding:40px 16px;text-align:center;color:var(--muted);display:grid;gap:8px;place-items:center}
+.empty-state svg{width:40px;height:40px;color:var(--line-2)}
+.rolechk{display:flex;flex-wrap:wrap;gap:8px}
+.rolechk label{display:flex;gap:6px;align-items:center;font-size:13px;padding:4px 8px;border:1px solid var(--line);border-radius:8px}
+
+/* ================= InfraBeat look (from the corporate profile) ================= */
+body{letter-spacing:.005em}
+h1,h2,h3,.top h1{font-weight:700}
+.btn.primary{background:var(--grad);border-color:transparent;box-shadow:0 4px 14px color-mix(in srgb,var(--brand) 30%,transparent)}
+.btn.primary:hover{filter:brightness(1.08);background:var(--grad)}
+.ib-logo{height:26px;width:auto;display:block}
+.gtext{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.gold{color:var(--gold)}
+/* login */
+.login .hero{background:var(--grad);padding:44px 48px;isolation:isolate}
+.login .hero::before{content:"";position:absolute;inset:auto -40px -60px auto;width:48%;height:40%;background:url(/assets/lowpoly.svg) right bottom/cover no-repeat;opacity:.28;z-index:-1}
+.login .hero::after{content:"";position:absolute;inset:-40px auto auto -60px;width:45%;height:40%;background:url(/assets/lowpoly.svg) left top/cover no-repeat;transform:rotate(180deg);opacity:.35;z-index:-1}
+.hero .logo-chip{width:fit-content;align-self:flex-start;display:inline-flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:8px 14px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.hero .logo-chip span{font-weight:900;color:#2b2a52;font-size:16px;border-left:1px solid #e4e6ef;padding-left:12px;line-height:1.15;display:grid}
+.hero .logo-chip em{font-style:normal;font-weight:600;font-size:11.5px;letter-spacing:.02em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero h1{font-size:40px;font-weight:900;letter-spacing:-.02em;max-width:19ch}
+.login .hero{justify-content:center;gap:30px}
+.login .hero::after{display:none}
+/* animated wordmark */
+.mb-brand{display:grid;gap:6px;width:fit-content}
+.mb-name{display:flex;align-items:center;font-size:44px;font-weight:900;letter-spacing:-.02em;line-height:1;
+  background:linear-gradient(100deg,#fff 0%,#fff 40%,#9ff0ff 50%,#fff 60%,#fff 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:mb-shine 6s ease-in-out 2.2s infinite}
+.mb-name .ch{display:inline-block;color:transparent;background:inherit;-webkit-background-clip:text;background-clip:text;animation:mb-rise .55s cubic-bezier(.2,.8,.2,1.2) calc(var(--i) * 70ms) both}
+.mb-name .tick{width:.62em;height:.62em;margin:0 .14em 0 .16em;flex:none;animation:mb-pop .45s cubic-bezier(.2,.8,.2,1.4) calc(var(--i) * 70ms + 150ms) both}
+.mb-name .tick circle{fill:#16a34a}
+.mb-name .tick path{fill:none;stroke:#fff;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:16;stroke-dashoffset:16;animation:mb-draw .45s ease-out calc(var(--i) * 70ms + 500ms) forwards}
+.mb-line{font-size:15px;font-weight:600;letter-spacing:.04em;color:#e6e2ff}
+.mb-line span{display:inline-block;animation:mb-fade .5s ease-out calc(1.1s + var(--j) * .35s) both}
+.mb-line span:last-child{color:var(--gold)}
+@keyframes mb-rise{from{opacity:0;transform:translateY(.45em) scale(.9)}to{opacity:1;transform:none}}
+@keyframes mb-pop{from{opacity:0;transform:scale(.3) rotate(-30deg)}to{opacity:1;transform:none}}
+@keyframes mb-draw{to{stroke-dashoffset:0}}
+@keyframes mb-fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes mb-shine{0%,70%{background-position:100% 0}100%{background-position:-50% 0}}
+/* tick pulse: a soft green ring when the check lands */
+.mb-name .tick{overflow:visible}
+.mb-name .tick circle{animation:mb-pulse .9s ease-out calc(var(--i) * 70ms + 520ms) 1 both}
+@keyframes mb-pulse{0%{filter:drop-shadow(0 0 0 rgba(22,163,74,0))}35%{filter:drop-shadow(0 0 9px rgba(22,163,74,.9))}100%{filter:drop-shadow(0 0 0 rgba(22,163,74,0))}}
+/* invoice story: card in (0.3 s) -> checks tick (1.3 / 1.65 / 2.0 s) -> stamp lands (2.45 s) */
+.inv-art .ia-card,.inv-art .ia-pill,.inv-art .ia-stamp{transform-box:fill-box;transform-origin:center}
+.inv-art .ia-card{animation:ia-in .7s cubic-bezier(.2,.8,.2,1) .3s both}
+.inv-art .ia-shadow{animation:ia-fade .7s ease-out .5s both}
+.inv-art .ia-pill{animation:ia-pill .5s cubic-bezier(.2,.8,.2,1.3) calc(1.3s + var(--k) * .35s) both}
+.inv-art .ia-dot{transform-box:fill-box;transform-origin:center;animation:ia-pop .35s cubic-bezier(.2,.8,.2,1.6) calc(1.45s + var(--k) * .35s) both}
+.inv-art .ia-tick{stroke-dasharray:14;stroke-dashoffset:14;animation:mb-draw .35s ease-out calc(1.6s + var(--k) * .35s) forwards}
+.inv-art .ia-stamp{animation:ia-stamp .55s cubic-bezier(.3,1.4,.4,1) 2.45s both}
+@keyframes ia-in{from{opacity:0;transform:translateY(26px) rotate(-2deg)}to{opacity:1;transform:none}}
+@keyframes ia-fade{from{opacity:0}to{opacity:.18}}
+@keyframes ia-pill{from{opacity:0;transform:translateX(-18px) scale(.92)}to{opacity:1;transform:none}}
+@keyframes ia-pop{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes ia-stamp{0%{opacity:0;transform:scale(2.2) rotate(8deg)}60%{opacity:1;transform:scale(.94)}80%{transform:scale(1.04)}100%{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.mb-name,.mb-name .ch,.mb-name .tick,.mb-name .tick circle,.mb-line span,.inv-art *{animation:none!important}.mb-name .tick path,.inv-art .ia-tick{stroke-dashoffset:0}}
+.hero-main{display:grid;gap:14px}
+.hero-main h1{margin:0}
+.points{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:10px}
+.points li{display:flex;gap:10px;align-items:center;color:#f1eeff;font-size:14.5px}
+.points li svg{width:20px;height:20px;padding:3px;border-radius:50%;background:rgba(255,255,255,.18);stroke-width:2.6}
+.inv-art{width:min(440px,100%);height:auto;filter:drop-shadow(0 18px 30px rgba(10,6,40,.35))}
+.login .hero small{position:absolute;left:48px;bottom:24px}
+.hero p{color:#e6e2ff}
+.collage{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:28px 0 8px;max-width:720px;align-items:center}
+.collage figure{margin:0;border-radius:14px;overflow:hidden;box-shadow:0 14px 34px rgba(10,6,40,.45);aspect-ratio:9/15.5;background:#2b2370;transition:transform .3s}
+.collage figure:nth-child(even){transform:translateY(22px)}
+.collage figure:hover{transform:translateY(-4px)}
+.collage img{width:100%;height:100%;object-fit:cover;display:block}
+.flow{margin-top:36px}
+.flow div{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22)}
+.flow div:nth-child(5){background:rgba(242,183,5,.22);border-color:rgba(242,183,5,.6)}
+.hero small{color:#d9d4ff}
+.form-side{position:relative;background:var(--surface);overflow:hidden}
+.card-login .ib-logo{height:34px}
+.card-login h2{font-size:28px}
+.pbar{display:inline-block;width:6px;height:28px;border-radius:3px;background:var(--grad);vertical-align:-5px;margin-right:12px}
+/* shell */
+.side{background:var(--surface)}
+.side .brandmark{flex-direction:column;align-items:flex-start;gap:6px;padding:6px 10px 18px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.side .brandmark .app{font-size:13px;font-weight:700;color:var(--fg-2);display:flex;align-items:center;gap:6px}
+.side .brandmark .app i{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.nav[aria-current="page"]{background:var(--grad);color:#fff;box-shadow:0 6px 16px color-mix(in srgb,var(--brand) 30%,transparent)}
+.nav[aria-current="page"] .badge{background:#fff;color:var(--brand)}
+.side .sys{background:var(--raised)}
+.top h1::before{content:"";display:inline-block;width:5px;height:20px;border-radius:3px;background:var(--grad);vertical-align:-3px;margin-right:10px}
+.avatar{background:var(--grad);color:#fff}
+.ibfoot{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 4px 0;margin-top:8px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+.ibfoot img{height:16px}
+/* banners */
+.ibanner{position:relative;overflow:hidden;border-radius:18px;background:var(--grad);color:#fff;min-height:170px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);isolation:isolate;box-shadow:0 12px 30px color-mix(in srgb,var(--brand) 25%,transparent)}
+@media (max-width:860px){.ibanner{grid-template-columns:minmax(0,1fr)}.ibanner .art{display:none}}
+.ibanner .txt{padding:26px 28px;display:grid;gap:10px;align-content:center;z-index:1}
+.ibanner h2{margin:0;font-size:26px;font-weight:900;letter-spacing:-.01em}
+.ibanner p{margin:0;color:#e3defe;max-width:60ch}
+.ibanner .art{position:relative}
+.ibanner .art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;-webkit-mask-image:linear-gradient(90deg,transparent,#000 30%);mask-image:linear-gradient(90deg,transparent,#000 30%)}
+.ibanner .art.contain{background:#fff;margin:16px;border-radius:14px;box-shadow:0 8px 24px rgba(10,6,40,.25)}
+.ibanner .art.contain img{object-fit:contain;object-position:center;-webkit-mask-image:none;mask-image:none;padding:10px}
+.ibanner::before{content:"";position:absolute;left:-30px;bottom:-50px;width:260px;height:170px;background:url(/assets/lowpoly.svg) center/cover;opacity:.35;z-index:0}
+.ibanner .actions .btn{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35);color:#fff}
+.ibanner .actions .btn:hover{background:rgba(255,255,255,.24)}
+.ibanner .actions .btn.light{background:#fff;color:var(--brand);border-color:#fff}
+.pill{display:inline-flex;gap:8px;align-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);padding:4px 12px;border-radius:999px;font-size:12.5px;width:fit-content}
+/* KPI: big gradient numbers on light cards, like "700+ / 300+" */
+.kpi{background:var(--surface);border:1px solid var(--line)}
+.kpi .v{font-size:34px;font-weight:900;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.1}
+.kpi .ico{background:var(--grad);color:#fff;border-radius:9px}
+/* stat band: purple panel with white / gold numbers, like "Value Delivered" */
+.statband{border-radius:18px;background:var(--grad);color:#fff;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));overflow:hidden;position:relative;isolation:isolate}
+@media (max-width:900px){.statband{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.statband::after{content:"";position:absolute;right:-40px;top:-50px;width:280px;height:180px;background:url(/assets/lowpoly.svg) center/cover;opacity:.3;z-index:-1}
+.statband div{padding:20px 18px;border-right:1px solid rgba(255,255,255,.15);display:grid;gap:4px}
+.statband div:last-child{border-right:0}
+.statband b{font-size:34px;font-weight:900;line-height:1.05}
+.statband div:nth-child(odd) b{color:var(--gold)}
+.statband span{font-size:13px;color:#e3defe}
+/* cards & titles like slides */
+.card-h h3{display:flex;align-items:center;gap:10px}
+.card-h h3::before{content:"";width:4px;height:16px;border-radius:2px;background:var(--grad)}
+.tile .card-h h3::before{display:none}
+.agent .ic{background:var(--grad);color:#fff;width:40px;height:40px;border-radius:12px;box-shadow:0 6px 14px color-mix(in srgb,var(--brand) 25%,transparent)}
+.agent{transition:transform .15s,box-shadow .15s}
+.agent:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.bar .fill{background:var(--grad)}
+.cols .c .f{background:var(--grad)}
+.drop{background:linear-gradient(120deg,color-mix(in srgb,var(--brand-soft) 70%,transparent),transparent);border-color:color-mix(in srgb,var(--brand) 35%,var(--line-2))}
+.seg button[aria-pressed="true"]{color:var(--brand)}
+.tabs button[aria-selected="true"]{color:var(--brand);border-color:var(--brand)}
+.empty-state img{width:120px;opacity:.9;mix-blend-mode:multiply}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="tip" class="tip" hidden></div>
+<div id="toast"></div>
+<script>
+// ---------------------------------------------------------------- icons
+const P = {
+  home:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>', inv:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>',
+  mon:'<path d="M3 12h4l3-8 4 16 3-8h4"/>', dash:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>', mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+  learn:'<path d="M12 3a6 6 0 00-4 10.5V17h8v-3.5A6 6 0 0012 3z"/><path d="M9 21h6"/>', sap:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h6"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/><path d="M16 4.5a3.5 3.5 0 010 7M18 14a6 6 0 013.5 6"/>', bot:'<rect x="4" y="7" width="16" height="12" rx="3"/><path d="M12 3v4M9 12h.01M15 12h.01M9 16h6"/>',
+  out:'<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11"/>', key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3"/>', search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
+  up:'<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>', refresh:'<path d="M20 11a8 8 0 10-2.3 5.7"/><path d="M20 5v6h-6"/>', check:'<path d="M5 12l4 4 10-10"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  menu:'<path d="M4 6h16M4 12h16M4 18h16"/>', clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', rupee:'<path d="M7 5h10M7 9h10M7 5c6 0 6 8 0 8l7 6"/>', zap:'<path d="M13 3L5 14h6l-1 7 8-11h-6z"/>',
+  alert:'<path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17h.01"/>', moon:'<path d="M20 14A8 8 0 1110 4a7 7 0 0010 10z"/>', box:'<path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/>',
+};
+const ic = (n, cls = "i") => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${P[n] ?? ""}</svg>`;
+
+// ---------------------------------------------------------------- helpers
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const inr = n => n == null || n === "" ? "–" : "₹" + Number(n).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const inr0 = n => n == null ? "–" : "₹" + Number(n).toLocaleString("en-IN", { maximumFractionDigits: 0 });
+const tm = iso => iso ? new Date(iso).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) : "";
+const dt = iso => iso ? new Date(iso).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
+const LABEL = { PARKED: "Parked", POSTED: "Posted", PAID: "Paid", PART_PAID: "Partly paid", READY: "Ready to park", REVIEW: "Review", EXCEPTION: "Exception", REJECTED: "Rejected", PROCESSING: "Processing",
+  PASS: "Pass", WARN: "Warning", BLOCK: "Block", INFO: "Info", NA: "N/A" };
+const chip = s => `<span class="chip s-${esc(s)}">${esc(LABEL[s] ?? s)}</span>`;
+const initials = n => (n || "?").split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+let ME = null, APP = {}, STATE = null, PAGE = "home", OPEN = null, DTAB = "overview", EDIT = false, FILTER = "open", Q = "", timer = null;
+const OPEN_DETAILS = new Set();          // folded boxes the user opened (stay open through auto-refresh)
+document.addEventListener("toggle", e => { const f = e.target.dataset?.fold; if (f) e.target.open ? OPEN_DETAILS.add(f) : OPEN_DETAILS.delete(f); }, true);
+
+function toast(m) { $("#toast").innerHTML = `<div class="toast" role="status">${esc(m)}</div>`; clearTimeout(toast.t); toast.t = setTimeout(() => $("#toast").innerHTML = "", 3200); }
+async function api(path, body, raw) {
+  const opt = body === undefined ? {} : raw ? { method: "POST", body } : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+  let r;
+  try { r = await fetch(path, opt); }
+  catch { throw new Error("Cannot reach Match Book right now (server restarting or network down). Please try again in a moment."); }
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401) { ME = null; renderLogin(); throw new Error(j.error || "Please sign in"); }
+  if (r.status === 403 && j.mustChange) { renderChangePw(true); throw new Error(j.error); }
+  if (!r.ok) throw new Error(j.error || `Error ${r.status}`);
+  return j;
+}
+const can = p => ME?.perms.includes(p);
+function modal(title, html, okText = "OK", danger) {
+  return new Promise(res => {
+    const el = document.createElement("div");
+    el.className = "modal";
+    el.innerHTML = `<div class="box" role="dialog" aria-modal="true" aria-label="${esc(title)}"><h3>${esc(title)}</h3>${html}<div class="actions" style="justify-content:flex-end"><button class="btn" data-x>Cancel</button><button class="btn ${danger ? "danger" : "primary"}" data-ok>${esc(okText)}</button></div></div>`;
+    document.body.appendChild(el);
+    const close = v => { el.remove(); res(v); };
+    el.querySelector("[data-x]").onclick = () => close(null);
+    el.querySelector("[data-ok]").onclick = () => { const t = el.querySelector("textarea,input"); close(t ? t.value : true); };
+    el.addEventListener("keydown", e => { if (e.key === "Escape") close(null); });
+    (el.querySelector("textarea,input") || el.querySelector("[data-ok]")).focus();
+  });
+}
+
+// ---------------------------------------------------------------- login
+// Animated wordmark: letters rise in, a check mark draws between the words, the tagline follows.
+function brandMark() {
+  const words = (APP.name || "").split(/\s+/);
+  let n = 0;
+  const letters = w => [...w].map(ch => `<span class="ch" style="--i:${n++}">${esc(ch)}</span>`).join("");
+  const name = words.length > 1
+    ? `${letters(words[0])}<svg class="tick" viewBox="0 0 24 24" aria-hidden="true" style="--i:${n++}"><circle cx="12" cy="12" r="10.5"/><path d="M7 12.5l3.2 3.2L17.2 8.7"/></svg>${letters(words.slice(1).join(" "))}`
+    : letters(words[0] || "");
+  const line = (APP.tagline || "").split(/(?<=\.)\s+/).map((w, k) => `<span style="--j:${k}">${esc(w)}</span>`).join(" ");
+  return `<div class="mb-brand"><div class="mb-name" role="heading" aria-level="2" aria-label="${esc(APP.name || "")}">${name}</div><div class="mb-line">${line}</div></div>`;
+}
+
+// One invoice, checked and parked: the whole idea of the app in a single picture.
+// Plays once with the wordmark: the invoice slides in, the three checks tick one by one, the PARKED stamp lands.
+const INVOICE_ART = `<svg class="inv-art" viewBox="0 0 420 260" aria-hidden="true">
+  <g transform="translate(40 24) rotate(-4)"><rect class="ia-shadow" width="210" height="214" rx="14" fill="#fff" opacity=".18"/></g>
+  <g transform="translate(62 14)"><g class="ia-card">
+    <rect width="214" height="226" rx="14" fill="#fff"/>
+    <rect x="20" y="22" width="88" height="10" rx="5" fill="#4b3bc4"/><rect x="20" y="40" width="130" height="7" rx="3.5" fill="#d9dcea"/>
+    <text x="194" y="32" text-anchor="end" font-family="Roboto,Segoe UI,sans-serif" font-size="11" font-weight="700" fill="#7c7d94">TAX INVOICE</text>
+    <g font-family="Roboto,Segoe UI,sans-serif" font-size="10.5" fill="#4a4a63">
+      <text x="20" y="74">PO 4500018231</text><text x="20" y="92">GSTIN 27AABCV…</text>
+      <rect x="20" y="108" width="174" height="1" fill="#e4e6ef"/>
+      <rect x="20" y="120" width="96" height="7" rx="3.5" fill="#d9dcea"/><rect x="150" y="120" width="44" height="7" rx="3.5" fill="#d9dcea"/>
+      <rect x="20" y="136" width="80" height="7" rx="3.5" fill="#d9dcea"/><rect x="150" y="136" width="44" height="7" rx="3.5" fill="#d9dcea"/>
+      <rect x="20" y="152" width="174" height="1" fill="#e4e6ef"/>
+      <text x="20" y="171" font-weight="700" fill="#16152b">Total</text><text x="194" y="171" text-anchor="end" font-weight="700" fill="#16152b">₹ 8,08,300</text>
+    </g>
+    <g transform="translate(104 190) rotate(-7)"><g class="ia-stamp"><rect width="92" height="26" rx="6" fill="rgba(15,138,60,.06)" stroke="#0f8a3c" stroke-width="2"/>
+      <text x="46" y="17" text-anchor="middle" font-family="Roboto,Segoe UI,sans-serif" font-size="10.5" font-weight="900" fill="#0f8a3c" letter-spacing=".6">PARKED · SAP</text></g></g>
+  </g></g>
+  <g font-family="Roboto,Segoe UI,sans-serif" font-size="11.5" font-weight="700">
+    ${[["3-way match", 46], ["GST & GSTIN", 96], ["No duplicate", 146]].map(([t, y], k) => `<g transform="translate(262 ${y})"><g class="ia-pill" style="--k:${k}"><rect width="140" height="34" rx="17" fill="#fff" opacity=".96"/>
+      <circle class="ia-dot" cx="17" cy="17" r="10" fill="#0f8a3c"/><path class="ia-tick" d="M12 17l3.5 3.5 7-7" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><text x="34" y="21.5" fill="#16152b">${t}</text></g></g>`).join("")}
+  </g>
+</svg>`;
+function renderLogin(msg = "") {
+  clearInterval(timer);
+  document.title = APP.name || "Sign in";
+  $("#app").innerHTML = `<div class="login">
+    <section class="hero">
+      ${brandMark()}
+      <div class="hero-main"><h1>From inbox to SAP MIRO, without the chase.</h1>
+        <p>Vendor invoices from the mailbox are read, matched with the PO and GRN, checked for GST and parked in SAP. You only see the ones that need you.</p>
+        <ul class="points">${["3-way match, GST and duplicate checks on every invoice", "Exceptions go to the right person with the reason", "Parked in SAP MIRO, with the PDF kept for audit"].map(t => `<li>${ic("check")}${esc(t)}</li>`).join("")}</ul></div>
+      ${INVOICE_ART}
+      <small>InfraBeat Technologies Pvt. Ltd. · ${APP.sapMode === "rfc" ? "Connected to SAP" : "Demo mode"}</small>
+    </section>
+    <section class="form-side"><form class="card-login" id="lf" autocomplete="on">
+      <img class="ib-logo" src="/assets/infrabeat-logo.png" alt="InfraBeat" style="margin-bottom:6px"><div class="muted small" style="margin-bottom:30px;font-weight:600">${esc(APP.name || "")}</div>
+      <h2><span class="pbar"></span>Sign in</h2><p class="muted" style="margin:0">Use the user name from your administrator.</p>
+      <div class="field"><label for="u">User name</label><input class="input" id="u" name="username" autocomplete="username" required></div>
+      <div class="field"><label for="p">Password</label><input class="input" id="p" name="password" type="password" autocomplete="current-password" required></div>
+      <div class="err" id="le" role="alert">${esc(msg)}</div>
+      <button class="btn primary block" type="submit">Sign in</button>
+      ${APP.demo ? `<details class="demo-users"><summary><b>Demo accounts</b><span class="muted"> · click to see user names and password</span></summary>
+        <p>Initial password for every account: <code class="pw">${esc(APP.demo.password)}</code><br>At first sign-in you choose your own password; after that the initial one no longer works for that account.</p>
+        <table class="demo-tbl"><thead><tr><th>User name</th><th>Name</th><th>Role</th><th>Password</th></tr></thead><tbody>
+        ${APP.demo.users.map(u => `<tr data-u="${esc(u.username)}" tabindex="0" title="Click to fill in"><td><code>${esc(u.username)}</code></td><td>${esc(u.name)}</td><td>${esc(u.roles.map(r => ROLE_NAME[r] ?? r).join(", "))}</td>
+          <td>${u.mustChange ? `<code>${esc(APP.demo.password)}</code>` : `<span class="muted">own password set</span>`}</td></tr>`).join("")}</tbody></table>
+        <p class="muted">Click a row to fill in the sign-in form.</p></details>` : ""}
+    </form></section></div>`;
+  $("#u").focus();
+  const fill = tr => { const u = APP.demo.users.find(x => x.username === tr.dataset.u); $("#u").value = u.username; $("#p").value = u.mustChange ? APP.demo.password : ""; (u.mustChange ? $("#lf button[type=submit]") : $("#p")).focus(); };
+  document.querySelectorAll(".demo-tbl tr[data-u]").forEach(tr => { tr.onclick = () => fill(tr); tr.onkeydown = e => { if (e.key === "Enter") fill(tr); }; });
+  $("#lf").onsubmit = async e => {
+    e.preventDefault();
+    try { const r = await api("/api/login", { username: $("#u").value, password: $("#p").value }); ME = r.user; ME.mustChange ? renderChangePw(true) : boot(); }
+    catch (x) { $("#le").textContent = x.message; }
+  };
+}
+
+function renderChangePw(forced) {
+  $("#app").innerHTML = `<div class="login"><section class="hero"><div class="logo-chip"><img class="ib-logo" src="/assets/infrabeat-logo.png" alt="InfraBeat"><span>${esc(APP.name || "")}</span></div><div><h1>Set your own password</h1><p>${forced ? "This is your first sign-in. Choose a password only you know." : "Change your password."}</p></div><small></small></section>
+    <section class="form-side"><form class="card-login" id="cf"><h2>New password</h2><p class="muted" style="margin:0">At least 8 characters with letters and numbers.</p>
+    <div class="field"><label for="o">Current password</label><input class="input" id="o" type="password" autocomplete="current-password" required></div>
+    <div class="field"><label for="n1">New password</label><input class="input" id="n1" type="password" autocomplete="new-password" required></div>
+    <div class="field"><label for="n2">Repeat new password</label><input class="input" id="n2" type="password" autocomplete="new-password" required></div>
+    <div class="err" id="ce" role="alert"></div><button class="btn primary block">Save password</button>
+    ${forced ? "" : `<button class="btn ghost block" type="button" id="cc" style="margin-top:8px">Cancel</button>`}</form></section></div>`;
+  $("#o").focus();
+  if (!forced) $("#cc").onclick = boot;
+  $("#cf").onsubmit = async e => {
+    e.preventDefault();
+    if ($("#n1").value !== $("#n2").value) return $("#ce").textContent = "The two new passwords differ";
+    try { await api("/api/password", { old: $("#o").value, new: $("#n1").value }); ME.mustChange = false; toast("Password saved"); boot(); }
+    catch (x) { $("#ce").textContent = x.message; }
+  };
+}
+
+// ---------------------------------------------------------------- shell
+const PAGES = [
+  { id: "home", t: "Home", i: "home", show: () => true },
+  { id: "invoices", t: "Invoices", i: "inv", show: () => true },
+  { id: "monitor", t: "Follow-ups", i: "mon", show: () => true },
+  { id: "dashboard", t: "Dashboard", i: "dash", show: () => true },
+  { id: "messages", t: "Messages", i: "mail", show: () => true },
+  { id: "agents", t: "Agents", i: "bot", show: () => can("view_all") },
+  { id: "learning", t: "Learning", i: "learn", show: () => can("view_all") },
+  { id: "sap", t: "SAP documents", i: "sap", show: () => can("view_all") },
+  { id: "users", t: "Users", i: "users", show: () => can("users") },
+];
+const ROLE_NAME = { ADMIN: "Administrator", AP: "Accounts payable", AP_CONTROLLER: "AP controller", BUYER: "Buyer", REQUESTOR: "Requestor", MANAGER: "Manager", QC: "Quality", STORES: "Stores" };
+
+async function boot() {
+  try { const r = await api("/api/me"); ME = r.user; APP = { ...APP, ...r.app }; } catch { return; }
+  if (ME.mustChange) return renderChangePw(true);
+  document.title = APP.name;
+  $("#app").innerHTML = `<div class="shell">
+    <aside class="side" id="side">
+      <div class="brandmark"><img class="ib-logo" src="/assets/infrabeat-logo.png" alt="InfraBeat"><span class="app"><i></i>${esc(APP.tagline)}</span></div>
+      <nav id="nav" aria-label="Main">${PAGES.filter(p => p.show()).map(p => `<button class="nav" data-page="${p.id}">${ic(p.i)}<span>${p.t}</span>${p.id === "messages" ? `<span class="badge" id="nb" hidden></span>` : ""}</button>`).join("")}</nav>
+      <div class="spacer"></div>
+      <div class="sys"><div><span class="dot ${APP.sapMode === "rfc" ? "live" : "sim"}"></span>${esc(APP.sapMode === "rfc" ? APP.sapLabel : "Simulated SAP")}</div><div class="muted">Reading: ${esc(APP.engine)}</div></div>
+    </aside>
+    <div class="main">
+      <header class="top"><button class="btn ghost menu-btn" id="mb" aria-label="Menu">${ic("menu")}</button>
+        <div><h1 id="pt"></h1><div class="sub" id="ps"></div></div><div class="grow"></div>
+        <button class="btn ghost" id="theme" aria-label="Switch theme" title="Light / dark">${ic("moon")}</button>
+        <div class="usermenu"><button class="btn ghost" id="um" aria-haspopup="true" style="gap:10px;padding:4px 8px"><span class="avatar">${esc(initials(ME.name))}</span><span class="small" style="text-align:left;line-height:1.2"><b>${esc(ME.name)}</b><br><span class="muted">${esc(ME.roles.map(r => ROLE_NAME[r] ?? r).join(", "))}</span></span></button>
+          <div class="pop" id="upop" hidden><div class="who"><b>${esc(ME.name)}</b><div class="muted small">${esc(ME.username)}</div></div>
+          <button class="nav" id="cpw">${ic("key")}Change password</button><button class="nav" id="lo">${ic("out")}Sign out</button></div></div>
+      </header>
+      <main class="content" id="content"></main>
+      <footer class="content" style="padding-top:0"><div class="ibfoot"><img src="/assets/infrabeat-logo.png" alt="InfraBeat"><span>InfraBeat Technologies Pvt. Ltd. · ${esc(APP.name)}</span></div></footer>
+    </div></div>`;
+  $("#nav").onclick = e => { const b = e.target.closest("[data-page]"); if (b) { go(b.dataset.page); $("#side").classList.remove("open"); } };
+  $("#mb").onclick = () => $("#side").classList.toggle("open");
+  $("#um").onclick = () => $("#upop").hidden = !$("#upop").hidden;
+  document.addEventListener("click", e => { if (!e.target.closest(".usermenu") && $("#upop")) $("#upop").hidden = true; });
+  $("#lo").onclick = async () => { await api("/api/logout", {}).catch(() => {}); ME = null; renderLogin(); };
+  $("#cpw").onclick = () => renderChangePw(false);
+  $("#theme").onclick = () => { const d = document.documentElement; const dark = d.dataset.theme ? d.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; d.dataset.theme = dark ? "light" : "dark"; try { localStorage.setItem("theme", d.dataset.theme); } catch {} };
+  go(location.hash.slice(1) || "home");
+  clearInterval(timer); timer = setInterval(() => refresh(true), 5000);
+}
+
+function go(page) {
+  if (!PAGES.find(p => p.id === page && p.show())) page = "home";
+  PAGE = page; location.hash = page;
+  document.querySelectorAll(".nav[data-page]").forEach(b => b.setAttribute("aria-current", b.dataset.page === page ? "page" : "false"));
+  const p = PAGES.find(x => x.id === page);
+  $("#pt").textContent = p.t;
+  $("#content").innerHTML = `<div class="empty-state">${ic("refresh")}Loading…</div>`;
+  refresh(false);
+}
+
+let lastKey = "";
+// someone is typing in a field inside el: the 5-second refresh must not redraw it under them
+const typing = el => { const a = document.activeElement; return !!el && !!a && el.contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName); };
+function offline(on) {
+  let p = $("#offline");
+  if (!on) { p?.remove(); return; }
+  if (!p) { p = document.createElement("div"); p.id = "offline"; p.className = "offline"; p.setAttribute("role", "status"); document.body.appendChild(p); }
+  p.textContent = "Reconnecting to Match Book…";
+}
+async function refresh(silent) {
+  if (!ME || $("#cf") || document.querySelector(".modal") || (EDIT && OPEN)) return;
+  try {
+    STATE = await api("/api/state");
+    offline(false);
+    const nb = $("#nb"); if (nb) { nb.hidden = !STATE.unread; nb.textContent = STATE.unread; }
+    const R = { home: pHome, invoices: pInvoices, monitor: pMonitor, dashboard: pDashboard, messages: pMessages, agents: pAgents, learning: pLearning, sap: pSap, users: pUsers }[PAGE];
+    const html = await R();
+    const key = PAGE + html;
+    if (!silent || (key !== lastKey && !typing($("#content")))) { const y = scrollY; $("#content").innerHTML = html; lastKey = key; if (silent) scrollTo(0, y); wire(); }
+    if (OPEN && !(silent && (typing($("#drawerhost")) || $("#drawerhost")?.querySelector("[data-dirty]")))) renderDrawer(silent);
+  } catch (e) {
+    if (!silent) $("#content").innerHTML = `<div class="card card-b">${esc(e.message)}</div>`;
+    else if (/Cannot reach/.test(e.message)) offline(true);
+  }
+}
+const sub = t => { const s = $("#ps"); if (s) s.textContent = t; };
+
+// ---------------------------------------------------------------- home
+async function pHome() {
+  const t = await api("/api/tiles");
+  const inv = STATE.invoices;
+  const n = s => inv.filter(i => i.status === s).length;
+  const booked = inv.filter(i => ["PARKED", "POSTED", "PART_PAID", "PAID"].includes(i.status));
+  sub(`Good ${new Date().getHours() < 12 ? "morning" : new Date().getHours() < 17 ? "afternoon" : "evening"}, ${ME.name.split(" ")[0]}`);
+  const kpis = can("view_all") ? `<div class="kpis">
+    ${kpi("inv", "Invoices received", inv.length, `${STATE.mails.length} mails read`)}
+    ${kpi("check", "Booked in SAP", booked.length, inr0(booked.reduce((a, i) => a + (i.extraction?.fields.total || 0), 0)))}
+    ${kpi("clock", "Waiting for people", n("REVIEW") + n("READY"), `${n("READY")} ready · ${n("REVIEW")} review`)}
+    ${kpi("alert", "Exceptions", n("EXCEPTION"), "on hold with a reason")}
+    ${kpi("zap", "Touchless", booked.length ? Math.round(booked.filter(i => !touched(i)).length / Math.max(1, inv.filter(i => i.status !== "PROCESSING").length) * 100) + "%" : "–", "parked with no correction")}</div>` : "";
+  return `<section class="ibanner"><div class="txt"><span class="pill">${ic("zap")}${esc(ME.roles.map(r => ROLE_NAME[r]).join(", "))}</span><h2>Welcome, ${esc(ME.name)}</h2>
+      <p>Your tiles update as the agents work${t.monitorAt ? ` · SAP follow-ups as of ${dt(t.monitorAt)}` : ""}.</p>
+      <div class="actions">${can("review") ? `<button class="btn light" data-go="invoices">${ic("inv")}Open invoices</button>` : ""}${can("monitor") ? `<button class="btn" data-act="scan">${ic("refresh")}Refresh SAP follow-ups</button>` : ""}<button class="btn" data-go="dashboard">${ic("dash")}Dashboard</button></div></div>
+    <div class="art"><img src="/assets/team.jpg" alt=""></div></section>
+    ${kpis}
+    <div class="tiles">${t.tiles.map(tile).join("")}</div>`;
+}
+// same rule as the dashboard: a person corrected, approved a warning, overrode or decided on the invoice
+const touched = i => (i.log ?? []).some(l => l.agent === "Human Review Agent" || (l.agent === "AP Orchestrator" && /^(Human Review Agent: sent|Exception:)/.test(l.msg)));
+const kpi = (i, l, v, h) =>`<div class="card kpi"><div class="l"><span class="ico">${ic(i)}</span>${esc(l)}</div><div class="v">${esc(v)}</div><div class="h">${esc(h)}</div></div>`;
+function tile(t) {
+  const row = x => {
+    if (x.id) return `<li data-open="${x.id}"><span class="t">${esc(x.vendor)}</span>${chip(x.status)}<span class="s">${esc(x.invoiceNo ?? "")} · ${inr0(x.amount)}${x.left != null ? ` · ${x.left >= 0 ? `${x.left} days left` : `${-x.left} days overdue`}` : ""}${x.reason && ["EXCEPTION", "REVIEW"].includes(x.status) ? ` · ${esc(x.reason)}` : ""}</span></li>`;
+    if (x.PAY_BY) return `<li data-go="monitor" data-mtab="due"><span class="t">${esc(x.VENDOR || x.LIFNR)}</span><span class="small muted">${inr0(x.AMOUNT)}</span><span class="s">${esc([x.MSME ? "MSME" : "", x.XBLNR || `FI ${Number(x.BELNR)}`, x.DAYS < 0 ? `overdue ${-x.DAYS} d` : x.DAYS === 0 ? "due today" : `due in ${x.DAYS} d`].filter(Boolean).join(" · "))}</span></li>`;
+    const head = x.PRUEFLOS ? `Lot ${x.PRUEFLOS}` : `PO ${x.EBELN}${x.EBELP ? "/" + Number(x.EBELP) : ""}`;
+    const right = x.DAYS_LATE != null ? `${x.DAYS_LATE} d late` : x.DAYS != null ? `${x.DAYS} d` : x.AMOUNT != null ? inr0(x.AMOUNT) : x.UD === "R" ? "Rejected" : "Pending";
+    const s = [x.VENDOR, x.TXZ01, x.OPEN_QTY != null ? `${x.OPEN_QTY} open` : x.OPEN != null ? `${x.OPEN} open` : "", x.CREATED ? `since ${x.CREATED}` : ""].filter(Boolean).join(" · ");
+    return `<li data-go="monitor"><span class="t">${esc(head)}</span><span class="small muted">${esc(right)}</span><span class="s">${esc(s)}</span></li>`;
+  };
+  return `<article class="card tile s-${t.tone}"><div class="card-h"><span class="tone"></span><div><h3>${esc(t.title)}</h3><div class="small muted">${esc(t.sub)}</div></div><span class="count">${t.count}</span></div>
+    ${t.items.length ? `<ul>${t.items.map(row).join("")}</ul>` : `<div class="empty">${ic("check")}Nothing here</div>`}</article>`;
+}
+
+// ---------------------------------------------------------------- invoices
+async function pInvoices() {
+  const all = STATE.invoices;
+  const F = { open: i => ["READY", "REVIEW", "EXCEPTION", "PROCESSING"].includes(i.status), booked: i => ["PARKED", "POSTED", "PART_PAID", "PAID"].includes(i.status), exc: i => i.status === "EXCEPTION", all: () => true };
+  const q = Q.toLowerCase();
+  const list = all.filter(F[FILTER]).filter(i => !q || [i.id, i.ctx?.vendorName, i.extraction?.fields.vendor_name, i.extraction?.fields.invoice_no, i.ctx?.po, i.file].join(" ").toLowerCase().includes(q));
+  sub(`${all.length} invoices · ${STATE.inbox.length ? `${STATE.inbox.length} waiting in the folder` : "folder empty"}`);
+  const cnt = k => all.filter(F[k]).length;
+  return `${can("review") ? `<div class="drop" id="drop" role="button" tabindex="0" aria-label="Upload PDF invoices">${ic("up")}<span>Drag PDF invoices here, or</span>
+      <button class="btn primary" type="button" data-pick>${ic("up")}Choose PDFs</button><span class="muted small">several at once is fine</span></div>` : ""}
+  <section class="card"><div class="card-h" style="flex-wrap:wrap">
+    <div class="seg" role="group" aria-label="Filter">${[["open", "Open"], ["exc", "Exceptions"], ["booked", "Booked"], ["all", "All"]].map(([k, l]) => `<button data-filter="${k}" aria-pressed="${FILTER === k}">${l} <span class="muted">${cnt(k)}</span></button>`).join("")}</div>
+    <div class="grow"></div><label class="search">${ic("search")}<input class="input" id="q" placeholder="Search vendor, invoice, PO" value="${esc(Q)}" aria-label="Search"></label></div>
+    ${list.length ? `<div class="tbl"><table><thead><tr><th>Invoice</th><th>Vendor</th><th>PO</th><th class="num">Amount</th><th>Source</th><th>Owner</th><th>Status</th><th>Received</th></tr></thead><tbody>
+    ${list.map(i => { const f = i.extraction?.fields ?? {}; return `<tr class="click" data-open="${i.id}"><td><b class="mono">${esc(f.invoice_no || i.file)}</b><div class="small muted mono">${i.id}</div></td>
+      <td>${esc(i.ctx?.vendorName || f.vendor_name || "–")}${i.ctx?.msme ? ` <span class="chip s-warn">MSME</span>` : ""}</td><td class="mono">${esc(i.ctx?.po || f.po_no || "–")}</td><td class="num">${inr(f.total)}</td>
+      <td>${ic(i.source?.type === "Mail" ? "mail" : "box")}</td><td class="small">${esc(i.assignedName || i.assignedTo || "")}</td><td>${chip(i.status)}<div class="small muted">${esc(["EXCEPTION", "REVIEW"].includes(i.status) ? i.reason : i.park ? i.park.result.INVOICEDOCNUMBER : "")}</div></td><td class="small muted">${dt(i.received)}</td></tr>`; }).join("")}
+    </tbody></table></div>` : `<div class="empty-state">${ic("inv")}No invoices in this view</div>`}</section>`;
+}
+
+function renderDrawer(silent) {
+  const inv = STATE.invoices.find(i => i.id === OPEN);
+  let host = $("#drawerhost");
+  if (!host) { host = document.createElement("div"); host.id = "drawerhost"; document.body.appendChild(host); }
+  if (!inv) { host.innerHTML = ""; OPEN = null; return; }
+  const html = drawer(inv);
+  if (silent && host.dataset.key === html) return;
+  const y = host.querySelector(".dbody")?.scrollTop ?? 0;
+  host.dataset.key = html;
+  host.innerHTML = `<div class="scrim" data-close></div><aside class="drawer" role="dialog" aria-label="Invoice ${esc(inv.id)}">${html}</aside>`;
+  const b = host.querySelector(".dbody"); if (b && silent) b.scrollTop = y;
+  wireDrawer(inv);
+}
+
+function stepper(inv) {
+  const c = id => inv.checks?.find(x => x.id === id);
+  const st = inv.status, fin = ["PARKED", "POSTED", "PART_PAID", "PAID"].includes(st);
+  const conf = c(0)?.status === "WARN" ? "warn" : inv.extraction ? "ok" : "wait";
+  const val = !inv.checks ? "wait" : inv.checks.some(x => x.status === "BLOCK") ? "bad" : inv.checks.some(x => x.status === "WARN") ? "warn" : "ok";
+  const rev = st === "REVIEW" || st === "READY" ? "warn" : st === "REJECTED" ? "bad" : inv.override || fin ? "ok" : st === "EXCEPTION" ? "bad" : "wait";
+  const steps = [["Read", inv.source ? "ok" : "wait"], ["Extract", conf], ["SAP data", inv.ctx?.po ? "ok" : inv.checks ? "bad" : "wait"], ["Validate", val], ["Review", rev], ["Park", fin ? "ok" : "wait"], ["Posted", ["POSTED", "PART_PAID", "PAID"].includes(st) ? "ok" : "wait"], [st === "PART_PAID" ? "Partly paid" : "Paid", st === "PAID" ? "ok" : st === "PART_PAID" ? "warn" : "wait"]];
+  return `<div class="stepper">${steps.map(([l, s], k) => `<span class="step ${s}"><i>${s === "ok" ? "✓" : s === "bad" ? "!" : s === "warn" ? "?" : k + 1}</i>${l}</span>`).join(`<span class="arrow">›</span>`)}</div>`;
+}
+
+function drawer(inv) {
+  const f = inv.extraction?.fields ?? {};
+  const rfc = STATE.sapMode === "rfc", target = rfc ? STATE.sapLabel.split(" (")[0] : "SAP";
+  const B = {
+    PROCESSING: ["Agents are working on it", "Reading, fetching SAP data and checking…"],
+    READY: ["All checks passed: ready to park", `Click to park it in ${target} as a MIRO document.`],
+    REVIEW: ["Needs your review", inv.reason], EXCEPTION: ["On hold", inv.reason], REJECTED: ["Rejected", inv.reason],
+    PARKED: [`Parked as ${inv.park?.result.INVOICEDOCNUMBER} / ${inv.park?.result.FISCALYEAR}`, `In ${rfc ? STATE.sapLabel : "SAP (simulated)"}. Check and post in MIR4.${inv.override ? ` Override: ${inv.override.reason} (${inv.override.by})` : ""}`],
+    POSTED: [`Posted · FI document ${inv.sapStatus?.fiDoc ?? ""}`, `Booked on ${inv.sapStatus?.postedOn ?? ""}. Payment follows the payment terms.`],
+    PAID: [`Paid on ${inv.sapStatus?.paidOn ?? ""}`, `Payment document ${inv.sapStatus?.paymentDoc ?? ""}. Requestor and buyer were told.`],
+    PART_PAID: [`Partly paid · ${inr(inv.sapStatus?.paidAmount)} of ${inr(inv.sapStatus?.invoiceAmount)}`, `${inr(inv.sapStatus?.openAmount)} still open. Last payment ${inv.sapStatus?.paymentDoc ?? ""} on ${inv.sapStatus?.paidOn ?? ""}; the rest is picked up from SAP when it is paid.`],
+  }[inv.status];
+  let A = "";
+  if (["REVIEW", "READY"].includes(inv.status) && can("park")) A += (inv.lines || []).filter(l => l.ebelp).map(l => `<label class="small" title="${esc(l.desc)}: invoiced ${l.qty}, open ${l.open}">Item ${Number(l.ebelp)} <input class="qty" data-ebelp="${l.ebelp}" type="number" min="0" step="any" value="${inv.suggested?.[l.ebelp] ?? l.qty}" aria-label="Quantity item ${Number(l.ebelp)}"></label>`).join("")
+    + `<button class="btn primary" data-a="approve">${ic("check")}${inv.status === "REVIEW" ? "Approve & park" : "Park"} in ${esc(target)}</button>`;
+  if (inv.status === "EXCEPTION" && inv.overridable && can("override")) A += `<button class="btn" data-a="override">Approve with override</button>`;
+  if (inv.status === "EXCEPTION" && can("review")) A += `<button class="btn" data-a="rerun">${ic("refresh")}Re-check SAP</button>`;
+  if (inv.status === "EXCEPTION" && can("demo") && !rfc && inv.checks?.some(c => [2, 3].includes(c.id) && c.status === "BLOCK")) A += `<button class="btn" data-a="seed" title="Creates vendor, PO and GRN in the simulated SAP">Demo: create PO</button>`;
+  if (["REVIEW", "READY", "EXCEPTION"].includes(inv.status) && can("review")) A += `<button class="btn danger" data-a="reject">Reject</button>`;
+  if (inv.status === "PARKED" && can("demo") && !rfc) A += `<button class="btn" data-a="simulate-post">Demo: post in MIR4</button>`;
+  if (["POSTED", "PART_PAID"].includes(inv.status) && can("demo") && !rfc) A += `<button class="btn" data-a="simulate-partpay">Demo: partial payment</button><button class="btn" data-a="simulate-pay">Demo: payment run</button>`;
+  if (["PARKED", "POSTED", "PART_PAID"].includes(inv.status) && can("park")) A += `<button class="btn" data-a="sync">${ic("refresh")}Check SAP status</button>`;
+  // the PDF belongs on the invoice document, each PO and, once posted, the FI document (same targets as the server)
+  const atts = inv.sapAttachments ?? (inv.sapAttachment ? [{ ...inv.sapAttachment, label: "invoice document", tcode: "MIR4" }] : []);
+  const wanted = inv.park ? 1 + new Set(inv.park.payload.ITEMDATA.map(i => i.PO_NUMBER).filter(Boolean)).size + (inv.sapStatus?.fiDoc ? 1 : 0) : 0;
+  const missing = wanted - atts.filter(a => a.ok).length;
+  if (inv.park && missing > 0 && can("park")) A += `<button class="btn" data-a="attach" title="Adds the invoice PDF to the attachment list of the invoice document, the PO and the FI document">${ic("box")}Attach PDF in SAP</button>`;
+  // one line, details on click (open state kept across auto-refresh in OPEN_DETAILS)
+  const attLine = !inv.park ? "" : `<details class="${missing > 0 ? "warnbox" : "okbox small"} fold" data-fold="att-${inv.id}"${OPEN_DETAILS.has(`att-${inv.id}`) ? " open" : ""}>
+      <summary>${missing > 0 ? "" : ic("check")} <b>Invoice PDF in SAP</b> · ${atts.filter(a => a.ok).length} of ${wanted} attached${missing > 0 ? ` · ${missing} still to attach` : ""}</summary>
+      <div class="small muted" style="margin:6px 0 2px">Services for Object → Attachment list</div>
+      ${atts.map(a => `<div class="small">${a.ok ? "✓" : "✗"} ${esc(a.tcode)} · ${esc(a.label)}${a.ok ? ` · “${esc(a.title)}”` : `: ${esc(a.error)}`}</div>`).join("")}
+      ${missing > 0 && !inv.sapStatus?.fiDoc ? `<div class="small">The FI document follows when the invoice is posted.</div>` : ""}</details>`;
+  // payments read back from SAP (vendor-line amounts: TDS deducted at payment counts as settled)
+  const S = inv.sapStatus ?? {}, pct = S.invoiceAmount ? Math.min(100, Math.round((S.paidAmount / S.invoiceAmount) * 100)) : 0;
+  const payLine = !S.payments?.length ? "" : `<div class="${S.openAmount > 0 ? "warnbox" : "okbox small"}" style="display:block">
+      <b>Payments in SAP</b> · paid ${inr(S.paidAmount)} of ${inr(S.invoiceAmount)}${S.openAmount > 0 ? ` · <b>${inr(S.openAmount)} open</b>` : " · fully paid"}${S.method && S.openAmount > 0 ? ` <span class="muted">(${esc(S.method)})</span>` : ""}
+      <div style="height:6px;border-radius:3px;background:var(--neutral-bg);margin:6px 0"><div style="height:6px;border-radius:3px;width:${pct}%;background:var(--good)"></div></div>
+      ${S.payments.map(p => `<div class="small">Document <span class="mono">${esc(p.doc)}</span> · ${esc(p.date)} · ${inr(p.amount)}</div>`).join("")}</div>`;
+  const T = [["overview", "Overview"], ["checks", `Checks${inv.checks ? ` (${inv.checks.filter(c => ["BLOCK", "WARN"].includes(c.status)).length})` : ""}`], ["data", "Invoice data"], ["pdf", "PDF"], ["trail", "Agent trail"], ...(inv.park ? [["sap", "SAP document"]] : [])];
+  return `<div class="dhead"><div class="dtitle"><div style="flex:1;min-width:0"><h2>${esc(inv.ctx?.vendorName || f.vendor_name || inv.file)}</h2>
+      <div class="facts"><span>Invoice <b class="mono">${esc(f.invoice_no || "–")}</b></span><span>Date <b>${esc(f.invoice_date || "–")}</b></span><span>PO <b class="mono">${esc(inv.ctx?.po || f.po_no || "–")}</b></span><span>Amount <b>${inr(f.total)}</b></span><span>Owner <b>${esc(inv.assignedName || inv.assignedTo || "–")}</b></span><span>${ic(inv.source?.type === "Mail" ? "mail" : "box")} ${esc(inv.source?.type === "Mail" ? inv.source.from : "Common folder")}</span></div></div>
+      ${chip(inv.status)}<button class="btn ghost" data-close aria-label="Close">${ic("x")}</button></div>
+    <div class="tabs" role="tablist">${T.map(([k, l]) => `<button role="tab" data-tab="${k}" aria-selected="${DTAB === k}">${l}</button>`).join("")}</div></div>
+    <div class="dbody">${stepper(inv)}
+      <div class="banner s-${inv.status}"><div><h3>${esc(B[0])}</h3><p>${esc(B[1] || "")}</p></div><div class="actions">${A}</div></div>
+      ${payLine}${attLine}${(inv.extraction?.warnings || []).map(w => `<div class="warnbox">${esc(w)}</div>`).join("")}
+      ${dtab(inv)}</div>`;
+}
+
+function dtab(inv) {
+  const x = inv.extraction ?? { fields: {}, confidence: {} }, f = x.fields;
+  if (DTAB === "checks") return inv.checks ? `<div class="checks">${[...inv.checks].sort((a, b) => ["BLOCK", "WARN", "INFO", "PASS", "NA"].indexOf(a.status) - ["BLOCK", "WARN", "INFO", "PASS", "NA"].indexOf(b.status))
+    .map(c => `<div class="chk s-${c.status}"><span class="n">${String(c.id).padStart(2, "0")}</span><span class="t">${esc(c.name)}</span>${chip(c.status)}<span class="d">${esc(c.detail)}</span></div>`).join("")}</div>` : `<div class="empty-state">Not checked yet</div>`;
+  if (DTAB === "pdf") return `<iframe class="pdf" src="/api/invoices/${inv.id}/pdf" title="Invoice PDF"></iframe>`;
+  if (DTAB === "trail") return `<div class="card card-b"><div class="tl">${inv.log.map(l => `<div class="e"><span class="t">${tm(l.t)}</span><span class="m"></span><div class="x"><b>${esc(l.agent)}</b>${esc(l.msg)}</div></div>`).join("")}</div></div>`;
+  if (DTAB === "sap") return `<div class="grid2"><div><h3 class="small muted">BAPI_INCOMINGINVOICE_PARK · input</h3><pre>${esc(JSON.stringify(inv.park.payload, null, 2))}</pre></div><div><h3 class="small muted">SAP response</h3><pre>${esc(JSON.stringify({ ...inv.park.result, status: inv.sapStatus }, null, 2))}</pre>${inv.dms ? `<p class="small muted">DMS copy: <span class="mono">${esc(inv.dms)}</span></p>` : ""}</div></div>`;
+  const FIELDS = [["vendor_name", "Vendor"], ["vendor_gstin", "Vendor GSTIN"], ["vendor_pan", "PAN"], ["invoice_no", "Invoice no."], ["invoice_date", "Invoice date"], ["po_no", "PO no."], ["ship_to_gstin", "Ship-to GSTIN"], ["ship_to_name", "Ship-to name"], ["ship_to_address", "Delivery address"],
+    ["lr_no", "LR no."], ["delivery_note", "Delivery note"], ["msme_udyam", "MSME Udyam"], ["irn", "IRN"], ["taxable_value", "Taxable value", 1], ["cgst", "CGST", 1], ["sgst", "SGST", 1], ["igst", "IGST", 1], ["total", "Total", 1]];
+  const editable = can("review") && ["REVIEW", "READY", "EXCEPTION"].includes(inv.status);
+  if (DTAB === "data") return `<section class="card"><div class="card-h"><h3>Read from the invoice</h3><span class="muted small">${esc(x.engine ?? "")}</span><div class="grow"></div>
+      ${editable ? (EDIT ? `<button class="btn" data-a="cancel-edit">Cancel</button><button class="btn primary" data-a="save-edit">${ic("check")}Save & re-check</button>` : `<button class="btn" data-a="edit">Correct values</button>`) : ""}</div>
+    <div class="tbl"><table><thead><tr><th>Field</th><th>Value</th><th>Confidence</th></tr></thead><tbody>${FIELDS.map(([k, l, num]) => { const c = x.confidence[k];
+      return `<tr><td>${l}</td><td class="mono">${EDIT ? `<input class="input" style="padding:6px 8px" data-f="${k}" value="${esc(f[k] ?? "")}">` : esc(num ? inr(f[k]) : f[k] ?? "–")}</td><td>${c != null ? `<span class="conf"><i class="${c < .9 ? "lo" : ""}" style="width:${c * 100}%"></i></span><span class="small">${Math.round(c * 100)}%</span>` : ""}</td></tr>`; }).join("")}</tbody></table></div></section>
+    <section class="card"><div class="card-h"><h3>Line items</h3></div><div class="tbl"><table><thead><tr><th>Description</th><th>HSN/SAC</th><th class="num">Qty</th><th>UoM</th><th class="num">Rate</th><th class="num">Amount</th></tr></thead><tbody>
+    ${(f.line_items || []).map((l, n) => `<tr><td>${esc(l.desc)}</td><td class="mono">${esc(l.hsn ?? "")}</td><td class="num">${EDIT ? `<input class="qty" data-l="${n}" data-k="qty" value="${l.qty ?? ""}">` : l.qty ?? ""}</td><td>${esc(l.uom ?? "")}</td><td class="num">${EDIT ? `<input class="qty" data-l="${n}" data-k="rate" value="${l.rate ?? ""}">` : inr(l.rate)}</td><td class="num">${inr(l.amount)}</td></tr>`).join("") || `<tr><td colspan="6" class="muted">No lines read</td></tr>`}</tbody></table></div></section>`;
+  // overview
+  const bad = (inv.checks || []).filter(c => ["BLOCK", "WARN"].includes(c.status));
+  return `<div class="kv">${[["Vendor in SAP", inv.ctx?.vendor ? `${inv.ctx.vendor} · ${inv.ctx.vendorName}` : "–"], ["Company code", inv.ctx?.companyCode ? inv.ctx.companyCode : "–"], ["Plant", inv.ctx?.plant ? `${inv.ctx.plant} ${inv.ctx.plantName ?? ""}` : "–"],
+      ["Category", inv.category ?? "–"], ["Buyer (PO creator)", inv.ctx?.buyerName || inv.ctx?.buyer || "–"], ["Requestor", inv.ctx?.requestorName || inv.ctx?.requestor || "–"], ["Tax code", inv.ctx?.taxCode ?? "–"], ["Taxable / GST", `${inr(f.taxable_value)} / ${inr((f.cgst || 0) + (f.sgst || 0) + (f.igst || 0))}`]]
+      .map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join("")}</div>
+    ${inv.sapVendor ? `<section class="card"><div class="card-h"><h3>Vendor master in SAP</h3>${inv.sapVendor.deletionFlag ? `<span class="chip s-WARN">Flagged for deletion</span>` : ""}</div><div class="card-b kv">
+      ${[["Address", inv.sapVendor.address || "–"], ["PAN", inv.sapVendor.pan ? `${inv.sapVendor.pan} (${inv.sapVendor.panSource || "SAP"})` : "–"], ["MSME", inv.sapVendor.msme || "Not MSME in SAP"],
+        ["GST registered", inv.sapVendor.gstRegistered ? "Yes" : "No"], ["E-mail", inv.sapVendor.email || "–"], ["Region", inv.sapVendor.region || "–"]].map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join("")}</div></section>` : ""}
+    ${inv.costs && (inv.costs.delivery.length || inv.costs.shipment.length) ? `<section class="card"><div class="card-h"><h3>Freight and shipment costs</h3><span class="muted small">delivery costs on the PO (EKBZ) · shipment cost documents (VFKP)</span></div>
+      <div class="tbl"><table><thead><tr><th>Type</th><th>Payable to</th><th class="num">At GR</th><th class="num">Invoiced</th><th class="num">Open</th><th>Documents</th></tr></thead><tbody>
+      ${inv.costs.delivery.map(d => `<tr><td class="mono">${esc(d.KSCHL)}</td><td>${esc(d.LIFNR)} ${esc(d.VENDOR)}</td><td class="num">${inr(d.GR_VALUE)}</td><td class="num">${inr(d.IR_VALUE)}</td><td class="num">${inr(d.GR_VALUE - d.IR_VALUE)}</td><td class="mono small">${esc([...d.GR_DOCS, ...d.IR_DOCS].join(", "))}</td></tr>`).join("")}
+      ${inv.costs.shipment.map(s => `<tr><td>Shipment ${esc(s.SHIPMENT)}</td><td>${esc(s.CARRIER)}</td><td class="num">${inr(s.VALUE)}</td><td class="num">–</td><td class="num">${s.SETTLED ? "settled" : inr(s.VALUE)}</td><td class="mono small">${esc(s.COST_DOC)}/${esc(s.ITEM)}</td></tr>`).join("")}</tbody></table></div></section>` : ""}
+    ${bad.length ? `<section class="card"><div class="card-h"><h3>What needs attention</h3></div><div class="card-b checks">${bad.map(c => `<div class="chk s-${c.status}"><span class="n">${String(c.id).padStart(2, "0")}</span><span class="t">${esc(c.name)}</span>${chip(c.status)}<span class="d">${esc(c.detail)}</span></div>`).join("")}</div></section>`
+      : inv.checks ? `<div class="card card-b" style="display:flex;gap:10px;align-items:center">${ic("check")}<span>All ${inv.checks.length} checks passed or are for information only.</span></div>` : ""}`;
+}
+
+function wireDrawer(inv) {
+  const host = $("#drawerhost");
+  host.querySelectorAll("[data-close]").forEach(b => b.onclick = () => { OPEN = null; EDIT = false; host.innerHTML = ""; });
+  host.onkeydown = e => { if (e.key === "Escape") { OPEN = null; EDIT = false; host.innerHTML = ""; } };
+  // a changed field (e.g. a quantity to park) keeps the drawer from being redrawn by the auto-refresh
+  host.querySelectorAll("input, textarea, select").forEach(i => i.addEventListener("input", () => { i.dataset.dirty = "1"; }));
+  host.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { DTAB = b.dataset.tab; EDIT = false; renderDrawer(); });
+  host.querySelectorAll("[data-a]").forEach(b => b.onclick = () => act(inv, b.dataset.a, b));
+}
+
+async function act(inv, a, btn) {
+  const rfc = STATE.sapMode === "rfc";
+  let body = {};
+  if (a === "edit") { EDIT = true; return renderDrawer(); }
+  if (a === "cancel-edit") { EDIT = false; return renderDrawer(); }
+  if (a === "save-edit") {
+    const fields = {}; document.querySelectorAll("#drawerhost [data-f]").forEach(i => fields[i.dataset.f] = i.value);
+    const lines = []; document.querySelectorAll("#drawerhost [data-l]").forEach(i => { (lines[i.dataset.l] ??= {})[i.dataset.k] = i.value === "" ? null : Number(i.value); });
+    a = "correct"; body = { fields, lines }; EDIT = false;
+  }
+  if (a === "approve") {
+    body.qtys = Object.fromEntries([...document.querySelectorAll("#drawerhost input.qty[data-ebelp]")].map(i => [i.dataset.ebelp, Number(i.value)]));
+    if (rfc && !(await modal("Park in SAP?", `<p>This creates a real parked document in <b>${esc(STATE.sapLabel)}</b> and attaches the invoice PDF to it. You can check, post or delete it in MIR4.</p>`, "Park in SAP"))) return;
+  }
+  if (a === "attach" && rfc && !(await modal("Attach PDF in SAP?", `<p>Adds this invoice PDF to the attachment lists in <b>${esc(STATE.sapLabel)}</b> where it is still missing: invoice document <b>${esc(inv.park.result.INVOICEDOCNUMBER)}/${esc(inv.park.result.FISCALYEAR)}</b>, the purchase order${inv.sapStatus?.fiDoc ? " and the FI document" : ""}.</p>`, "Attach"))) return;
+  if (a === "override") { const r = await modal("Approve with override", `<p class="small muted">Blocks on this invoice: ${esc(inv.reason)}. The override and your reason are recorded in the trail.</p><textarea class="input" placeholder="Reason (required)"></textarea>`, "Override & park"); if (!r) return; body.reason = r; }
+  if (a === "reject") { const r = await modal("Reject invoice", `<p class="small muted">The vendor and buyer get a mail draft with this reason.</p><textarea class="input">${esc(inv.reason ?? "")}</textarea>`, "Reject", true); if (!r) return; body.reason = r; }
+  btn.disabled = true;
+  try {
+    if (a === "sync") { const r = await api("/api/sync", {}); toast(`${r.changed} of ${r.checked} document(s) changed in SAP`); }
+    else { const r = await api(`/api/invoices/${inv.id}/${a}`, body); toast(`${r.id}: ${LABEL[r.status] ?? r.status}`); }
+  } catch (e) { toast(e.message); }
+  await refresh(false);
+}
+
+// ---------------------------------------------------------------- vendor due list (payment run)
+// Open vendor invoices from SAP (BSIK): pay-by = net due date, or the MSME 45-day limit when earlier.
+let DUE_F = "all", DUE_ROWS = [];
+const DUE_FILTERS = { all: ["All open", () => true], overdue: ["Overdue", x => x.DAYS < 0], week: ["Due in 7 days", x => x.DAYS >= 0 && x.DAYS <= 7], msme: ["MSME", x => x.MSME], blocked: ["Payment block", x => !!x.BLOCK] };
+function dueList(all) {
+  const rows = all.filter(DUE_FILTERS[DUE_F]?.[1] ?? (() => true));
+  DUE_ROWS = rows;
+  const sum = l => l.reduce((a, x) => a + x.AMOUNT, 0);
+  const when = x => x.DAYS < 0 ? `<b style="color:var(--bad)">${-x.DAYS} d overdue</b>` : x.DAYS === 0 ? `<b style="color:var(--warn)">today</b>` : x.DAYS <= 7 ? `<span style="color:var(--warn)">in ${x.DAYS} d</span>` : `in ${x.DAYS} d`;
+  return `<div class="card-b" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+      ${Object.entries(DUE_FILTERS).map(([k, [l, fn]]) => { const l2 = all.filter(fn); return `<button class="btn ${DUE_F === k ? "primary" : ""}" data-duef="${k}">${esc(l)} · ${l2.length} · ${inr0(sum(l2))}</button>`; }).join("")}
+      <div class="grow"></div><button class="btn" data-act="due-csv">${ic("box")}Export CSV</button></div>
+    ${rows.length ? `<div class="tbl"><table><thead><tr>${["Pay by", "When", "Vendor", "MSME", "Reference", "FI doc", "Doc date", "Terms", "Open amount", "Part paid", "Block", "Match Book"].map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>
+      ${rows.map(x => `<tr><td>${esc(x.PAY_BY)}${x.MSME_DUE && x.MSME_DUE < x.DUE ? `<div class="small muted">MSME limit (terms ${esc(x.DUE)})</div>` : ""}</td><td>${when(x)}</td>
+        <td>${esc(x.VENDOR || "–")}<div class="small muted mono">${esc(x.LIFNR)}</div></td><td>${x.MSME ? `<span class="chip s-warn">${esc(x.MSME_TYPE || "MSME")}</span>` : "–"}</td>
+        <td class="mono">${esc(x.XBLNR || "–")}</td><td class="mono">${esc(x.BUKRS)}/${Number(x.BELNR)}/${esc(x.GJAHR)}</td><td>${esc(x.BLDAT || "–")}</td><td>${x.TERM_DAYS ? `${x.TERM_DAYS} d` : "due at once"}</td>
+        <td style="text-align:right">${inr(x.AMOUNT)}</td><td style="text-align:right">${x.PART_PAID ? inr(x.PART_PAID) : "–"}</td><td>${x.BLOCK ? `<span class="chip s-bad">${esc(x.BLOCK)}</span>` : "–"}</td>
+        <td>${x.INV ? `<a href="#" data-open="${x.INV}">${x.INV}</a>` : "–"}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty-state">${ic("check")}Nothing in this bucket</div>`}
+    <p class="small muted" style="margin:8px 16px">Open vendor items from SAP (no down payments). Pay-by is the net due date from the payment terms, or invoice date + 45 days for MSME vendors when that is earlier. Items with a payment block stay out of the weekly digest.</p>`;
+}
+function dueCsv() {
+  const cols = ["PAY_BY", "DAYS", "BUKRS", "LIFNR", "VENDOR", "MSME_TYPE", "XBLNR", "BELNR", "GJAHR", "BLDAT", "BASELINE", "TERM_DAYS", "DUE", "MSME_DUE", "AMOUNT", "PART_PAID", "CURRENCY", "BLOCK", "INV"];
+  const q = v => { const s = String(v ?? ""); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const csv = [cols.join(","), ...DUE_ROWS.map(x => cols.map(k => q(x[k])).join(","))].join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+  a.download = `vendor-due-list-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+// ---------------------------------------------------------------- monitor
+let MTAB = "grir";
+async function pMonitor() {
+  const m = await api("/api/monitor");
+  const mineOnly = !can("view_all");
+  const own = x => !mineOnly || [x.BUYER, x.REQUESTOR].some(v => (v || "").toUpperCase() === (ME.personId || "").toUpperCase());
+  const name = id => m.people[(id || "").toUpperCase()] || id || "–";
+  sub(m.at ? `SAP scan ${dt(m.at)} · ${m.notes?.length ? m.notes.length + " table(s) not readable" : "all tables read"}` : "No scan yet");
+  const T = {
+    grir: ["GRN without invoice", m.grir.filter(own), ["PO / item", "Vendor", "Material / text", "Open qty", "Value", "Last GR", "Days", "Buyer", "Requestor"], x => [`${x.EBELN}/${Number(x.EBELP)}`, x.VENDOR, x.TXZ01, x.OPEN_QTY, inr0(x.VALUE), x.LAST_GR, x.DAYS, name(x.BUYER), name(x.REQUESTOR)]],
+    advances: ["Open advances", m.advances.filter(own), ["PO", "Vendor", "Advance", "Paid on", "GRN done", "Buyer"], x => [x.EBELN, x.VENDOR, inr0(x.AMOUNT), x.PAID_ON, x.GR_DONE ? "Yes" : "No", name(x.BUYER)]],
+    late: ["Past delivery date", m.late.filter(own), ["PO / item", "Vendor", "Material / text", "Due", "Open", "Days late", "Buyer"], x => [`${x.EBELN}/${Number(x.EBELP)}`, x.VENDOR, x.TXZ01, x.EINDT, x.OPEN, x.DAYS_LATE, name(x.BUYER)]],
+    qm: ["Usage decisions", m.qm.filter(x => !mineOnly || own(x) || ME.roles.some(r => ["QC", "STORES"].includes(r))), ["Lot", "PO", "Vendor", "GRN", "Since", "Decision", "Requestor"], x => [x.PRUEFLOS, x.EBELN, x.VENDOR, x.MBLNR, x.CREATED, x.UD === "R" ? "Rejected: post 122" : "Pending", name(x.REQUESTOR || x.BUYER)]],
+    ...(can("view_all") ? { due: ["Due list (payment run)", m.due ?? [], [], null] } : {}),
+    msme: ["MSME 45-day clock", m.msme, ["Invoice", "Vendor", "Amount", "Invoice date", "Days", "Days left", "Status"], x => [x.invoiceNo, x.vendor, inr0(x.amount), x.invoiceDate, x.days, x.left, LABEL[x.status]]],
+  };
+  if (!T[MTAB]) MTAB = "grir";
+  const [title, rows, head, cells] = T[MTAB];
+  return `<section class="ibanner"><div class="txt"><span class="pill">${ic("mon")}${esc(STATE.sapMode === "rfc" ? STATE.sapLabel : "Simulated SAP")}</span><h2>Follow-ups across the plants</h2>
+      <p>GRNs waiting for invoices, open advances, late deliveries, usage decisions, the vendor due list and the MSME clock: found in SAP and sent to the person who can act.</p></div>
+      <div class="art contain"><img src="/assets/plant.jpg" alt=""></div></section>
+    <div class="kpis">${Object.entries(T).map(([k, [t, r]]) => `<button class="card kpi" style="text-align:left;cursor:pointer;border-color:${MTAB === k ? "var(--brand-2)" : "var(--line)"}" data-mtab="${k}"><div class="l">${esc(t)}</div><div class="v">${r.length}</div></button>`).join("")}</div>
+    <section class="card"><div class="card-h"><h3>${esc(title)}</h3><span class="muted small">${MTAB === "msme" ? "from invoices received" : "from SAP"}</span><div class="grow"></div>${can("monitor") ? `<button class="btn" data-act="scan">${ic("refresh")}Scan SAP now</button>` : ""}</div>
+    ${MTAB === "due" ? dueList(rows) : rows.length ? `<div class="tbl"><table><thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(x => `<tr>${cells(x).map(v => `<td>${esc(v ?? "–")}</td>`).join("")}</tr>`).join("")}</tbody></table></div>` : `<div class="empty-state">${ic("check")}Nothing open</div>`}</section>
+    <p class="small muted" style="margin:0">The follow-up agents scan SAP every hour and send one digest per person (Messages). Buyers and requestors see only their own POs.</p>`;
+}
+
+// ---------------------------------------------------------------- dashboard
+async function pDashboard() {
+  const d = await api("/api/dashboard");
+  sub(`${d.total} invoices · ${d.events.length} logged agent steps`);
+  const bars = (obj, map = k => k) => { const e = Object.entries(obj).filter(([k]) => k !== "-" && k !== "undefined"); const max = Math.max(1, ...e.map(x => x[1]));
+    return e.length ? `<div class="bars">${e.sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div class="bar" data-tip="${esc(map(k))}: ${v}"><span>${esc(map(k))}</span><span class="track"><span class="fill" style="display:block;width:${(v / max) * 100}%"></span></span><b>${v}</b></div>`).join("")}</div>` : `<div class="muted small">No data yet</div>`; };
+  const maxd = Math.max(1, ...d.perDay.map(x => x[1]));
+  const days = (v, n) => v == null ? ["–", "no data yet"] : [`${v} d`, `average of ${n}`];
+  const [tp, tpn] = days(d.daysToPark, d.parkedCount), [tq, tqn] = days(d.daysToPost, d.postedCount);
+  const A = d.ageing, COLS = ["0-7", "8-30", "31-60", ">60"];
+  const cell = (v, last) => `<td class="num">${v ? (last ? `<b style="color:var(--bad)">${v}</b>` : v) : `<span class="muted">0</span>`}</td>`;
+  const ageCard = A ? `<section class="card"><div class="card-h"><h3>Ageing of open follow-ups</h3><span class="muted small">days open, from the SAP scan of ${esc(dt(A.at))}</span></div>
+      <div class="tbl"><table><thead><tr><th>What is open</th>${COLS.map(c => `<th class="num">${c} d</th>`).join("")}<th class="num">Total</th></tr></thead><tbody>
+      ${A.rows.map(r => `<tr class="click" data-go="monitor"><td>${esc(r.name)}</td>${COLS.map((c, k) => cell(r[c], k === 3)).join("")}<td class="num"><b>${COLS.reduce((a, c) => a + r[c], 0)}</b></td></tr>`).join("")}
+      </tbody></table></div>
+      <div class="card-b small">MSME 45-day clock: ${A.msme.overdue ? `<b style="color:var(--bad)">${A.msme.overdue} overdue</b>` : "0 overdue"} · ${A.msme.week} due within 7 days · ${A.msme.later} later</div></section>` : "";
+  return `<section class="statband" aria-label="Value delivered">${[[d.total, "Invoices processed"],
+      [d.touchless == null ? "–" : d.touchless + "%", `Touchless: ${d.touchlessCount} of ${d.decided} booked with no correction`],
+      [tp, `Receipt → parked (${tpn})`], [tq, `Parked → posted in SAP (${tqn})`], [inr0(d.bookedValue), `Value booked in SAP · ${d.learned} rules learned`]]
+      .map(([v, l]) => `<div><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join("")}</section>
+    ${ageCard}
+    <div class="grid2">
+      <section class="card"><div class="card-h"><h3>Invoices by status</h3></div><div class="card-b">${bars(d.byStatus, k => LABEL[k] ?? k)}</div></section>
+      <section class="card"><div class="card-h"><h3>Why invoices stop</h3><span class="muted small">checks raising a block or warning</span></div><div class="card-b">${d.reasons.length ? bars(Object.fromEntries(d.reasons)) : `<div class="muted small">No stops yet</div>`}</div></section>
+      <section class="card"><div class="card-h"><h3>Invoices received per day</h3></div><div class="card-b" style="padding-bottom:30px">${d.perDay.length ? `<div class="cols">${d.perDay.map(([k, v]) => `<div class="c" data-tip="${esc(k)}: ${v} invoice(s)"><span class="small"><b>${v}</b></span><span class="f" style="height:${(v / maxd) * 120}px"></span><span class="lab">${esc(k.slice(5))}</span></div>`).join("")}</div>` : `<div class="muted small">No data yet</div>`}</div></section>
+      <section class="card"><div class="card-h"><h3>Open work by AP member</h3></div><div class="card-b">${bars(d.byAssignee)}</div></section>
+      <section class="card"><div class="card-h"><h3>By category</h3></div><div class="card-b">${bars(d.byCategory)}</div></section>
+      <section class="card"><div class="card-h"><h3>By source</h3></div><div class="card-b">${bars(d.bySource)}</div></section>
+    </div>
+    <section class="card"><div class="card-h"><h3>Agent log</h3><span class="muted small">every step, newest first</span></div>
+      <div class="tbl" style="max-height:460px"><table><thead><tr><th>Time</th><th>Agent</th><th>Invoice</th><th>What happened</th></tr></thead><tbody>${d.events.map(e => `<tr${e.invoice ? ` class="click" data-open="${e.invoice}"` : ""}><td class="small muted mono">${dt(e.t)}</td><td><b class="small">${esc(e.agent)}</b></td><td class="mono small">${esc(e.invoice ?? e.mail ?? "")}</td><td class="small">${esc(e.msg)}</td></tr>`).join("")}</tbody></table></div></section>`;
+}
+
+// ---------------------------------------------------------------- messages
+let MSGTAB = "out";
+async function pMessages() {
+  const o = await api("/api/outbox");
+  sub(`${o.outbox.length} messages${can("view_all") ? ` · ${o.mails.length} mails received` : ""}`);
+  const seg = can("view_all") ? `<div class="seg" role="group"><button data-msgtab="out" aria-pressed="${MSGTAB === "out"}">Sent by agents</button><button data-msgtab="in" aria-pressed="${MSGTAB === "in"}">Mails received</button></div>` : "";
+  if (MSGTAB === "in" && can("view_all")) return `${seg}<section class="card"><div class="tbl"><table><thead><tr><th>Mail</th><th>From</th><th>Subject</th><th>Orchestrator decision</th><th>Invoices</th><th>Received</th></tr></thead><tbody>
+    ${o.mails.map(m => `<tr><td class="mono small">${m.id}</td><td class="small">${esc(m.from)}</td><td>${esc(m.subject)}</td><td>${chip({ INVOICE: "PASS", STATUS_QUERY: "INFO", NO_ATTACHMENT: "WARN", OTHER: "NA" }[m.kind])} <span class="small">${esc({ INVOICE: "Invoice", STATUS_QUERY: "Status question → reply", NO_ATTACHMENT: "No PDF → reply", OTHER: "Not an invoice → AP team" }[m.kind])}</span></td><td>${m.invoices.map(i => `<a href="#" data-open="${i}">${i}</a>`).join(", ") || "–"}</td><td class="small muted">${dt(m.at)}</td></tr>`).join("") || `<tr><td colspan="6" class="muted">No mails yet</td></tr>`}</tbody></table></div></section>`;
+  return `${seg}<div class="grid2">${o.outbox.map(m => `<article class="note"><div class="h">${ic(m.channel.startsWith("Email") ? "mail" : "bot")}<b>${esc(m.agent)}</b><span>→ ${esc(m.toNames.join(", "))}</span><span style="margin-left:auto">${dt(m.at)}</span></div>
+    <b>${esc(m.subject)}</b><div class="x small">${esc(m.text)}</div><div class="h">${chip(m.status.startsWith("DRAFT") ? "WARN" : m.status.startsWith("SENT") ? "PASS" : "INFO")}<span>${esc(m.channel)} · ${esc(m.status.toLowerCase())}</span>
+    ${m.ref?.invoice ? `<a href="#" data-open="${m.ref.invoice}">${m.ref.invoice}</a>` : ""}${m.status === "DRAFT" && can("mail") ? `<button class="btn" style="margin-left:auto;padding:4px 10px" data-sent="${m.id}">Mark as sent</button>` : ""}</div></article>`).join("") || `<div class="empty-state">${ic("mail")}No messages for you yet</div>`}</div>`;
+}
+
+// ---------------------------------------------------------------- agents
+const AGENTS = [
+  ["Orchestration Agent", "Governs the whole flow. Checks each mail for an invoice and routes it.", "bot", ["Orchestration Agent", "AP Orchestrator"]],
+  ["Invoice Reading Agent", "Collects invoices from the mailbox and common folder, sorts them by category and assigns the AP queue.", "box", ["Invoice Reading Agent"]],
+  ["Data Extraction Agent", "Reads PO, GSTIN, PAN, amounts, lines, LR, signature. Scores its confidence.", "inv", ["Data Extraction Agent"]],
+  ["SAP Integration Agent", "Reads vendor, PO, PR, plant, GRN, UD, SES, advances, earlier invoices.", "sap", ["SAP Integration Agent"]],
+  ["Quality Inspection Agent", "Checks usage decisions, warns requestors, mails rejections, asks stores for 122.", "check", ["Quality Inspection Agent"]],
+  ["Validation Agent", "20 rule checks: 3-way match, GST, duplicates, GSTIN, clauses, MSME, TDS.", "zap", ["Validation Agent"]],
+  ["Human Review Agent", "Correct & validate, approve with override, reject. Every decision is recorded.", "users", ["Human Review Agent"]],
+  ["Learning Agent", "Learns from corrections and repeated approvals to cut manual work.", "learn", ["Learning Agent"]],
+  ["MIRO Parking Agent", "Parks the invoice in SAP with BAPI_INCOMINGINVOICE_PARK.", "sap", ["MIRO Parking Agent"]],
+  ["GR/IR & Advances Agent", "Finds GRNs without invoice, open advances and late deliveries.", "mon", ["Monitor Agents", "Open GR/IR and Advances Agent"]],
+  ["MSME Notification Agent", "Tracks the 45-day payment clock for MSME vendors.", "clock", ["MSME Notification Agent"]],
+  ["Reverse Data & DMS Agent", "Brings back posting and payment status, stores invoice + data in the DMS.", "refresh", ["Reverse Data Agent", "DMS Update Agent"]],
+  ["Mail Agent", "Writes replies, status answers and notifications.", "mail", ["Mail Agent"]],
+  ["Dashboard Agent", "Logs every step for the dashboard and audit.", "dash", []],
+];
+async function pAgents() {
+  const d = await api("/api/dashboard");
+  const n = names => names.length ? d.events.filter(e => names.includes(e.agent)).length : d.events.length;
+  sub("One orchestrator, 13 agents · steps from the agent log");
+  return `<section class="ibanner"><div class="txt"><span class="pill">${ic("bot")}Agentic AI · Intelligent Automation</span><h2>One orchestrator. Thirteen agents.</h2>
+      <p>Document &amp; data intelligence reads the invoice, SAP integration brings the facts, rules decide, people stay in control, and the Learning Agent cuts manual work over time.</p></div>
+      <div class="art"><img src="/assets/ai-woman.jpg" alt="" style="object-position:center 64%"></div></section>
+    <div class="agents">${AGENTS.map(([t, p, i, names]) => `<article class="card agent"><div class="top2"><span class="ic">${ic(i)}</span><b>${esc(t)}</b></div><p>${esc(p)}</p><span class="n">${n(names)} logged step(s)</span></article>`).join("")}</div>`;
+}
+
+// ---------------------------------------------------------------- learning
+async function pLearning() {
+  const L = await api("/api/learning");
+  const pats = Object.entries(L.patterns);
+  const need = L.correctAfter ?? 3;
+  sub(`${L.corrections.length} field correction(s) · proposed after ${need} identical corrections · ${pats.length} approval pattern(s) · auto-accept after ${L.autoAcceptAfter} approvals`);
+  const sw = (kind, key, off) => can("learning") ? `<button class="btn" style="padding:4px 10px" data-learn="${kind}" data-key="${esc(key)}" data-off="${!off}">${off ? "Switch on" : "Switch off"}</button>` : "";
+  const state = c => c.off ? chip("NA") : (c.times ?? 1) >= need ? `<span class="chip s-PASS">Proposing</span>` : `<span class="chip s-INFO">${need - (c.times ?? 1)} more</span>`;
+  return `<section class="card"><div class="card-h"><h3>Learned field corrections</h3><span class="muted small">after the same correction is made ${need} times for a vendor, it is proposed on that vendor's next invoice and a person confirms it</span></div>
+    ${L.corrections.length ? `<div class="tbl"><table><thead><tr><th>Vendor GSTIN</th><th>Field</th><th>Read as</th><th>Corrected to</th><th>Last by</th><th class="num">Times made</th><th class="num">Proposed</th><th>State</th><th></th></tr></thead><tbody>${L.corrections.map((c, k) => `<tr><td class="mono">${esc(c.vendor)}</td><td>${esc(c.field)}</td><td class="mono">${esc(c.from)}</td><td class="mono">${esc(c.to)}</td><td class="small">${esc(c.by)}</td><td class="num">${c.times ?? 1}${c.undone ? ` <span class="muted small" title="proposal undone by a reviewer">(undone ${c.undone}×)</span>` : ""}</td><td class="num">${c.used}</td><td>${state(c)}</td><td>${sw("correction", k, c.off)}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty-state">${ic("learn")}Corrections made in "Invoice data" show up here</div>`}</section>
+    <section class="card"><div class="card-h"><h3>Warnings people keep approving</h3><span class="muted small">only master-data and document checks can be learned</span></div>
+    ${pats.length ? `<div class="tbl"><table><thead><tr><th>Check</th><th>Vendor GSTIN</th><th>Warning</th><th class="num">Approvals</th><th>State</th><th></th></tr></thead><tbody>${pats.map(([k, p]) => `<tr><td>${esc(p.name)}</td><td class="mono">${esc(p.vendor)}</td><td class="small">${esc(p.detail)}</td><td class="num">${p.approvals}</td><td>${p.off ? chip("NA") : p.approvals >= L.autoAcceptAfter ? `<span class="chip s-PASS">Auto-accepted</span>` : `<span class="chip s-INFO">${L.autoAcceptAfter - p.approvals} more</span>`}</td><td>${sw("pattern", k, p.off)}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty-state">${ic("learn")}Approvals of invoices in review show up here</div>`}</section>`;
+}
+
+// ---------------------------------------------------------------- sap documents
+async function pSap() {
+  const d = await api("/api/sap/parked");
+  const v = l => d.vendors.find(x => x.LIFNR === l)?.NAME1 ?? "";
+  sub(d.real ? `Documents parked in ${STATE.sapLabel} from this app` : "Supplier invoices in the simulated SAP (RBKP)");
+  return `<section class="card"><div class="card-h"><h3>${d.real ? "Parked from this app" : "Simulated SAP"}</h3><div class="grow"></div>${can("park") ? `<button class="btn" data-act="sync">${ic("refresh")}Check status in SAP</button>` : ""}</div>
+    ${d.invoices.length ? `<div class="tbl"><table><thead><tr><th>Document</th><th>Year</th><th>Status</th><th>Vendor</th><th>Reference</th><th>Doc date</th><th>PO</th><th class="num">Qty</th><th class="num">Gross</th></tr></thead><tbody>${d.invoices.map(i => `<tr><td class="mono"><b>${i.BELNR}</b></td><td class="mono">${i.GJAHR}</td><td>${chip(i.STATUS)}</td><td>${esc(i.LIFNR)} ${esc(v(i.LIFNR))}</td><td class="mono">${esc(i.XBLNR)}</td><td class="mono">${esc(i.BLDAT)}</td><td class="mono">${esc(i.EBELN)}</td><td class="num">${i.QTY}</td><td class="num">${inr(i.RMWWR)}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty-state">${ic("sap")}No documents yet</div>`}</section>`;
+}
+
+// ---------------------------------------------------------------- users
+async function pUsers() {
+  const d = await api("/api/users");
+  sub(`${d.users.length} accounts · new and reset accounts start with the initial password`);
+  return `<div class="grid2" style="grid-template-columns:minmax(0,2fr) minmax(0,1fr)"><section class="card"><div class="tbl"><table><thead><tr><th>User</th><th>Roles</th><th>Last sign-in</th><th>State</th><th></th></tr></thead><tbody>
+    ${d.users.map(u => `<tr><td><div style="display:flex;gap:10px;align-items:center"><span class="avatar" style="width:30px;height:30px;font-size:11px">${esc(initials(u.name))}</span><div><b>${esc(u.name)}</b><div class="small muted mono">${esc(u.username)}</div></div></div></td><td class="small">${esc(u.roles.map(r => ROLE_NAME[r] ?? r).join(", "))}</td><td class="small muted">${u.lastLogin ? dt(u.lastLogin) : "never"}</td>
+      <td>${u.disabled ? chip("REJECTED") : u.mustChange ? `<span class="chip s-WARN">Initial password</span>` : `<span class="chip s-PASS">Active</span>`}</td>
+      <td class="actions" style="justify-content:flex-end">${u.username !== "admin" ? `<button class="btn" style="padding:4px 10px" data-user="${esc(u.username)}" data-uact="reset">Reset password</button><button class="btn ${u.disabled ? "" : "danger"}" style="padding:4px 10px" data-user="${esc(u.username)}" data-uact="${u.disabled ? "enable" : "disable"}">${u.disabled ? "Enable" : "Disable"}</button>` : ""}</td></tr>`).join("")}</tbody></table></div></section>
+    <section class="card"><div class="card-h"><h3>Add or change a user</h3></div><form class="card-b" id="uf" style="display:grid;gap:4px">
+      <div class="field"><label for="un">User name</label><input class="input" id="un" required pattern="[a-z0-9._-]{3,30}" placeholder="e.g. rpatil"></div>
+      <div class="field"><label for="ufn">Full name</label><input class="input" id="ufn" required></div>
+      <div class="field"><label for="upi">SAP user / person id</label><input class="input" id="upi" placeholder="e.g. AJADHAV (links POs and PRs)"></div>
+      <div class="field"><label>Roles</label><div class="rolechk">${d.roles.map(r => `<label><input type="checkbox" value="${r}">${ROLE_NAME[r] ?? r}</label>`).join("")}</div></div>
+      <button class="btn primary" style="margin-top:14px">Save user</button></form></section></div>`;
+}
+
+// ---------------------------------------------------------------- wiring
+function wire() {
+  const c = $("#content");
+  c.querySelectorAll("[data-open]").forEach(el => el.onclick = e => { e.preventDefault(); OPEN = el.dataset.open; DTAB = "overview"; EDIT = false; renderDrawer(); });
+  c.querySelectorAll("[data-go]").forEach(el => el.onclick = () => { if (el.dataset.mtab) MTAB = el.dataset.mtab; go(el.dataset.go); });
+  c.querySelectorAll("[data-act='due-csv']").forEach(b => b.onclick = () => dueCsv());
+  c.querySelectorAll("[data-filter]").forEach(b => b.onclick = () => { FILTER = b.dataset.filter; refresh(false); });
+  c.querySelectorAll("[data-mtab]:not([data-go])").forEach(b => b.onclick = () => { MTAB = b.dataset.mtab; refresh(false); });
+  c.querySelectorAll("[data-duef]").forEach(b => b.onclick = () => { DUE_F = b.dataset.duef; refresh(false); });
+  c.querySelectorAll("[data-msgtab]").forEach(b => b.onclick = () => { MSGTAB = b.dataset.msgtab; refresh(false); });
+  const q = $("#q"); if (q) { q.oninput = () => { Q = q.value; clearTimeout(q.t); q.t = setTimeout(() => refresh(false).then(() => { const n = $("#q"); n.focus(); n.setSelectionRange(Q.length, Q.length); }), 250); }; }
+  c.querySelectorAll("[data-act='scan']").forEach(b => b.onclick = async () => { b.disabled = true; try { await api("/api/monitor/run", {}); toast("SAP follow-ups refreshed"); } catch (e) { toast(e.message); } refresh(false); });
+  c.querySelectorAll("[data-act='sync']").forEach(b => b.onclick = async () => { b.disabled = true; try { const r = await api("/api/sync", {}); toast(`${r.changed} of ${r.checked} changed`); } catch (e) { toast(e.message); } refresh(false); });
+  c.querySelectorAll("[data-sent]").forEach(b => b.onclick = async () => { await api(`/api/outbox/${b.dataset.sent}/sent`, {}); refresh(false); });
+  c.querySelectorAll("[data-learn]").forEach(b => b.onclick = async () => { await api("/api/learning/toggle", { kind: b.dataset.learn, key: b.dataset.key, off: b.dataset.off === "true" }); refresh(false); });
+  c.querySelectorAll("[data-uact]").forEach(b => b.onclick = async () => {
+    if (!(await modal(b.dataset.uact === "reset" ? "Reset password?" : `${b.dataset.uact === "disable" ? "Disable" : "Enable"} user?`, `<p>${esc(b.dataset.user)}</p>`, "Yes", b.dataset.uact !== "enable"))) return;
+    try { await api(`/api/users/${b.dataset.user}/${b.dataset.uact}`, {}); toast("Done"); } catch (e) { toast(e.message); } refresh(false);
+  });
+  const uf = $("#uf"); if (uf) uf.onsubmit = async e => { e.preventDefault();
+    try { await api("/api/users", { username: $("#un").value, name: $("#ufn").value, personId: $("#upi").value.trim().toUpperCase() || undefined, roles: [...uf.querySelectorAll("input[type=checkbox]:checked")].map(x => x.value) }); toast("User saved. They sign in with the initial password."); refresh(false); }
+    catch (x) { toast(x.message); } };
+}
+
+// ---------------------------------------------------------------- upload (file picker + drag and drop)
+// Listeners sit on the document, so they keep working when the 5-second refresh rebuilds the page.
+async function uploadFiles(list) {
+  const pdfs = [...list].filter(f => /\.pdf$/i.test(f.name));
+  if (!pdfs.length) return toast("Only PDF files can be uploaded");
+  let ok = 0;
+  for (const f of pdfs) { try { await api(`/api/upload?name=${encodeURIComponent(f.name)}`, f, true); ok++; } catch (x) { toast(`${f.name}: ${x.message}`); } }
+  if (ok) toast(`${ok} PDF(s) uploaded: the agents are reading them now`);
+  refresh(false);
+}
+const picker = Object.assign(document.createElement("input"), { type: "file", accept: "application/pdf,.pdf", multiple: true, hidden: true });
+document.body.appendChild(picker);
+picker.onchange = () => { if (picker.files.length) uploadFiles(picker.files); picker.value = ""; };
+document.addEventListener("click", e => { if (e.target.closest("[data-pick]") || (e.target.closest("#drop") && !e.target.closest("button"))) picker.click(); });
+document.addEventListener("keydown", e => { if (e.target.id === "drop" && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); picker.click(); } });
+["dragenter", "dragover"].forEach(ev => document.addEventListener(ev, e => { const d = e.target.closest?.("#drop"); if (d) { e.preventDefault(); d.classList.add("on"); } }));
+document.addEventListener("dragleave", e => { const d = e.target.closest?.("#drop"); if (d && !d.contains(e.relatedTarget)) d.classList.remove("on"); });
+document.addEventListener("drop", e => { const d = e.target.closest?.("#drop"); if (!d) return; e.preventDefault(); d.classList.remove("on"); uploadFiles(e.dataTransfer.files); });
+// tooltips for chart marks
+document.addEventListener("mousemove", e => { const t = e.target.closest("[data-tip]"), tip = $("#tip"); if (!t) { tip.hidden = true; return; } tip.hidden = false; tip.textContent = t.dataset.tip; tip.style.left = Math.min(e.clientX + 12, innerWidth - 220) + "px"; tip.style.top = e.clientY + 14 + "px"; });
+window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (ME && h && h !== PAGE) go(h); });
+
+// ---------------------------------------------------------------- start
+try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
+(async () => {
+  try { APP = await (await fetch("/api/app")).json(); } catch {}
+  const r = await fetch("/api/me");
+  if (r.ok) { boot(); } else { const j = await r.json().catch(() => ({})); if (j.mustChange) { ME = {}; renderChangePw(true); } else renderLogin(); }
+})();
+</script>
+</body>
+</html>

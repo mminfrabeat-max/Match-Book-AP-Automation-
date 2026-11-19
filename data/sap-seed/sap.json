@@ -1,0 +1,558 @@
+{
+  "_note": "Mock SAP tables for the demo. Illustrative data only. Field names follow SAP (LFA1, EKKO/EKPO, MSEG, QALS, ESSR, RBKP).",
+  "company": {
+    "BUKRS": "4000",
+    "NAME": "Demo Industries Ltd"
+  },
+  "plants": [
+    {
+      "WERKS": "4010",
+      "NAME1": "Taloja",
+      "BUKRS": "4000",
+      "BUPLA": "4010",
+      "STATE_CODE": "27",
+      "GSTIN": "27AAACD1234F1Z5",
+      "STREET": "Plot K-1, MIDC Taloja",
+      "CITY": "Raigad",
+      "PIN": "410208",
+      "ADDRESS": "Plot K-1, MIDC Taloja, Raigad, 410208"
+    },
+    {
+      "WERKS": "4020",
+      "NAME1": "Dahej",
+      "BUKRS": "4000",
+      "BUPLA": "4020",
+      "STATE_CODE": "24",
+      "GSTIN": "24AAACD1234F1Z1",
+      "STREET": "GIDC Dahej",
+      "CITY": "Bharuch",
+      "PIN": "392130",
+      "ADDRESS": "GIDC Dahej, Bharuch, 392130"
+    }
+  ],
+  "vendors": [
+    {
+      "LIFNR": "100245",
+      "NAME1": "Vishwa Carbon Pvt Ltd",
+      "REGION": "27",
+      "GSTIN": "27AABCV4821K1Z2",
+      "PAN": "AABCV4821K",
+      "MSME": "",
+      "EMAIL": "accounts@vishwacarbon.example",
+      "ADDRESS": "Plot 44, TTC Industrial Area, Mahape, Navi Mumbai 400710",
+      "GST_REGISTERED": true,
+      "PAN_SOURCE": "vendor master"
+    },
+    {
+      "LIFNR": "100871",
+      "NAME1": "Shree Ganesh Engineering Works",
+      "REGION": "27",
+      "GSTIN": "27AAGFS3390P1ZK",
+      "PAN": "AAGFS3390P",
+      "MSME": "",
+      "EMAIL": "sales@shreeganesh.example",
+      "ADDRESS": "Gala 12, Sector 8, Turbhe MIDC, Navi Mumbai 400705",
+      "GST_REGISTERED": true,
+      "PAN_SOURCE": "vendor master"
+    },
+    {
+      "LIFNR": "100392",
+      "NAME1": "Apex Chemicals Ltd",
+      "REGION": "27",
+      "GSTIN": "27AADCA7712M1Z9",
+      "PAN": "AADCA7712M",
+      "MSME": "",
+      "EMAIL": "billing@apexchem.example",
+      "ADDRESS": "D-9, MIDC Industrial Area, Mahad, Raigad 402309",
+      "GST_REGISTERED": true,
+      "PAN_SOURCE": "vendor master"
+    },
+    {
+      "LIFNR": "101104",
+      "NAME1": "Sai Packaging Industries",
+      "REGION": "24",
+      "GSTIN": "24AAKFS6610Q1Z3",
+      "PAN": "AAKFS6610Q",
+      "MSME": "",
+      "EMAIL": "accounts@saipack.example",
+      "ADDRESS": "Survey 211, GIDC Vapi, Valsad, Gujarat 396195",
+      "GST_REGISTERED": true,
+      "PAN_SOURCE": "vendor master"
+    },
+    {
+      "LIFNR": "101377",
+      "NAME1": "Om Sai Fabricators",
+      "REGION": "27",
+      "GSTIN": "27ABXPO5521R1ZN",
+      "PAN": "ABXPO5521R",
+      "MSME": "Micro",
+      "EMAIL": "omsaifab@example.com",
+      "ADDRESS": "Shed 7, Pawane MIDC, Navi Mumbai 400703",
+      "GST_REGISTERED": true,
+      "PAN_SOURCE": "vendor master"
+    },
+    {
+      "LIFNR": "101420",
+      "NAME1": "Kaveri Pumps & Valves",
+      "REGION": "27",
+      "GSTIN": "27AAFCK2201L1ZD",
+      "PAN": "AAFCK2201L",
+      "MSME": "Small",
+      "EMAIL": "accounts@kaveripumps.example",
+      "ADDRESS": "A-31, Wagle Estate, Thane 400604",
+      "GST_REGISTERED": true,
+      "PAN_SOURCE": "vendor master"
+    },
+    {
+      "LIFNR": "101455",
+      "NAME1": "Techno Engineering Services",
+      "REGION": "27",
+      "GSTIN": "27AAGCT4410H1ZP",
+      "PAN": "AAGCT4410H",
+      "MSME": "Small",
+      "EMAIL": "accounts@technoengg.example",
+      "ADDRESS": "B-12, Bhosari MIDC, Pune 411026",
+      "GST_REGISTERED": true,
+      "PAN_SOURCE": "vendor master"
+    },
+    {
+      "LIFNR": "101460",
+      "NAME1": "Nirmal Fasteners",
+      "REGION": "27",
+      "GSTIN": "27AACFN7781E1Z4",
+      "PAN": "AACFN7781E",
+      "MSME": "",
+      "EMAIL": "nirmal@fasteners.example",
+      "ADDRESS": "Unit 5, Andheri East, Mumbai 400093",
+      "GST_REGISTERED": true,
+      "PAN_SOURCE": "vendor master"
+    },
+    {
+      "LIFNR": "300100",
+      "NAME1": "Western Roadlines (freight)",
+      "REGION": "27",
+      "GSTIN": "27AAEFW5512K1Z6",
+      "PAN": "AAEFW5512K",
+      "MSME": "",
+      "EMAIL": "billing@westernroadlines.example",
+      "ADDRESS": "Kalamboli Steel Market, Navi Mumbai 410218",
+      "GST_REGISTERED": true,
+      "PAN_SOURCE": "vendor master"
+    }
+  ],
+  "pos": [
+    {
+      "EBELN": "4500018231",
+      "LIFNR": "100245",
+      "BUKRS": "4000",
+      "WERKS": "4010",
+      "FRGKE": "R",
+      "ERNAM": "AJADHAV",
+      "ZTERM": "Z045",
+      "TYPE": "MATERIAL",
+      "TEXT": "BG 10% of PO value valid till 31-Mar-2027. LD 0.5% per week of delay, max 5%. Payment 45 days from GRN.",
+      "items": [
+        {
+          "EBELP": "00010",
+          "TXZ01": "Activated carbon, granular 8x30",
+          "MENGE": 10,
+          "MEINS": "MT",
+          "NETPR": 68500,
+          "GST_RATE": 18,
+          "QI": true,
+          "EINDT": "2026-10-18"
+        }
+      ]
+    },
+    {
+      "EBELN": "4500018305",
+      "LIFNR": "100871",
+      "BUKRS": "4000",
+      "WERKS": "4010",
+      "FRGKE": "R",
+      "ERNAM": "AJADHAV",
+      "ZTERM": "Z030",
+      "TYPE": "MATERIAL",
+      "TEXT": "Payment 30 days from GRN. No BG applicable.",
+      "items": [
+        {
+          "EBELP": "00010",
+          "TXZ01": "Gland packing set, PTFE 12 mm",
+          "MENGE": 150,
+          "MEINS": "NOS",
+          "NETPR": 1450,
+          "GST_RATE": 18,
+          "QI": false,
+          "EINDT": "2026-10-18"
+        }
+      ]
+    },
+    {
+      "EBELN": "4500018240",
+      "LIFNR": "100392",
+      "BUKRS": "4000",
+      "WERKS": "4010",
+      "FRGKE": "R",
+      "ERNAM": "AJADHAV",
+      "ZTERM": "Z030",
+      "TYPE": "MATERIAL",
+      "TEXT": "Payment 30 days from acceptance. Rejected material to be lifted by vendor within 7 days.",
+      "items": [
+        {
+          "EBELP": "00010",
+          "TXZ01": "Sulphuric acid 98%",
+          "MENGE": 25,
+          "MEINS": "MT",
+          "NETPR": 9200,
+          "GST_RATE": 18,
+          "QI": true,
+          "EINDT": "2026-10-20"
+        }
+      ]
+    },
+    {
+      "EBELN": "4500018266",
+      "LIFNR": "101104",
+      "BUKRS": "4000",
+      "WERKS": "4010",
+      "FRGKE": "R",
+      "ERNAM": "AJADHAV",
+      "ZTERM": "Z060",
+      "TYPE": "MATERIAL",
+      "TEXT": "Payment 60 days. Bags to carry company print as per artwork V3.",
+      "items": [
+        {
+          "EBELP": "00010",
+          "TXZ01": "HDPE woven bags 50 kg, laminated",
+          "MENGE": 20000,
+          "MEINS": "NOS",
+          "NETPR": 14.5,
+          "GST_RATE": 18,
+          "QI": false,
+          "EINDT": "2026-10-21"
+        }
+      ]
+    },
+    {
+      "EBELN": "4600004412",
+      "LIFNR": "101377",
+      "BUKRS": "4000",
+      "WERKS": "4010",
+      "FRGKE": "R",
+      "ERNAM": "AJADHAV",
+      "ZTERM": "Z015",
+      "TYPE": "SERVICE",
+      "TEXT": "Payment 15 days (MSME). Penalty 1% per week of delay in completion.",
+      "items": [
+        {
+          "EBELP": "00010",
+          "TXZ01": "Structural repair, prilling tower platform",
+          "MENGE": 1,
+          "MEINS": "AU",
+          "NETPR": 186000,
+          "GST_RATE": 18,
+          "QI": false,
+          "EINDT": "2026-10-22"
+        }
+      ]
+    },
+    {
+      "EBELN": "4500018390",
+      "LIFNR": "101420",
+      "BUKRS": "4000",
+      "WERKS": "4010",
+      "FRGKE": "R",
+      "ERNAM": "AJADHAV",
+      "ZTERM": "Z030",
+      "TYPE": "MATERIAL",
+      "TEXT": "Payment 30 days from GRN.",
+      "items": [
+        {
+          "EBELP": "00010",
+          "TXZ01": "Centrifugal pump seal kit",
+          "MENGE": 4,
+          "MEINS": "NOS",
+          "NETPR": 42500,
+          "GST_RATE": 18,
+          "QI": false,
+          "EINDT": "2026-10-20"
+        }
+      ]
+    },
+    {
+      "EBELN": "4500017755",
+      "LIFNR": "101455",
+      "BUKRS": "4000",
+      "WERKS": "4010",
+      "FRGKE": "R",
+      "ERNAM": "AJADHAV",
+      "ZTERM": "Z030",
+      "TYPE": "MATERIAL",
+      "TEXT": "Advance 50% against PI. Balance after delivery. LD 0.5% per week.",
+      "items": [
+        {
+          "EBELP": "00010",
+          "TXZ01": "Ammonia storage tank valves",
+          "MENGE": 2,
+          "MEINS": "NOS",
+          "NETPR": 500000,
+          "GST_RATE": 18,
+          "QI": false,
+          "EINDT": "2026-10-15"
+        }
+      ]
+    },
+    {
+      "EBELN": "4500018012",
+      "LIFNR": "101460",
+      "BUKRS": "4000",
+      "WERKS": "4010",
+      "FRGKE": "R",
+      "ERNAM": "AJADHAV",
+      "ZTERM": "Z030",
+      "TYPE": "MATERIAL",
+      "TEXT": "Payment 30 days.",
+      "items": [
+        {
+          "EBELP": "00010",
+          "TXZ01": "SS fasteners kit M16",
+          "MENGE": 500,
+          "MEINS": "NOS",
+          "NETPR": 123,
+          "GST_RATE": 18,
+          "QI": true,
+          "EINDT": "2026-10-05"
+        }
+      ]
+    }
+  ],
+  "grs": [
+    {
+      "MBLNR": "5000231187",
+      "MJAHR": "2026",
+      "ZEILE": "0001",
+      "BWART": "101",
+      "EBELN": "4500018231",
+      "EBELP": "00010",
+      "MENGE": 10,
+      "XBLNR": "DN-7741",
+      "LR_NO": "LR77812",
+      "BUDAT": "2026-10-17"
+    },
+    {
+      "MBLNR": "5000231195",
+      "MJAHR": "2026",
+      "ZEILE": "0001",
+      "BWART": "101",
+      "EBELN": "4500018305",
+      "EBELP": "00010",
+      "MENGE": 100,
+      "XBLNR": "DC-2231",
+      "LR_NO": "",
+      "BUDAT": "2026-10-19"
+    },
+    {
+      "MBLNR": "5000231203",
+      "MJAHR": "2026",
+      "ZEILE": "0001",
+      "BWART": "101",
+      "EBELN": "4500018240",
+      "EBELP": "00010",
+      "MENGE": 25,
+      "XBLNR": "DN-5521",
+      "LR_NO": "LR90311",
+      "BUDAT": "2026-10-20"
+    },
+    {
+      "MBLNR": "5000231211",
+      "MJAHR": "2026",
+      "ZEILE": "0001",
+      "BWART": "101",
+      "EBELN": "4500018266",
+      "EBELP": "00010",
+      "MENGE": 20000,
+      "XBLNR": "DC-0907",
+      "LR_NO": "LR4410",
+      "BUDAT": "2026-10-21"
+    },
+    {
+      "MBLNR": "5000231230",
+      "MJAHR": "2026",
+      "ZEILE": "0001",
+      "BWART": "101",
+      "EBELN": "4500018390",
+      "EBELP": "00010",
+      "MENGE": 4,
+      "XBLNR": "DC-118",
+      "LR_NO": "LR5120",
+      "BUDAT": "2026-10-22"
+    },
+    {
+      "MBLNR": "5000231150",
+      "MJAHR": "2026",
+      "ZEILE": "0001",
+      "BWART": "101",
+      "EBELN": "4500018012",
+      "EBELP": "00010",
+      "MENGE": 500,
+      "XBLNR": "NF-DC-88",
+      "LR_NO": "LR3321",
+      "BUDAT": "2026-10-05"
+    }
+  ],
+  "inspection_lots": [
+    {
+      "PRUEFLOS": "010000045121",
+      "MBLNR": "5000231187",
+      "EBELN": "4500018231",
+      "UD": "A",
+      "UD_TEXT": "Accepted"
+    },
+    {
+      "PRUEFLOS": "010000045177",
+      "MBLNR": "5000231203",
+      "EBELN": "4500018240",
+      "UD": "R",
+      "UD_TEXT": "Rejected: concentration 96.1%, spec min 98%"
+    },
+    {
+      "PRUEFLOS": "010000045190",
+      "MBLNR": "5000231150",
+      "EBELN": "4500018012",
+      "UD": "",
+      "UD_TEXT": "Usage decision pending"
+    }
+  ],
+  "ses": [
+    {
+      "LBLNI": "1000045612",
+      "EBELN": "4600004412",
+      "EBELP": "00010",
+      "QTY": 1,
+      "RELEASED": true,
+      "JMS": "JMS-2026-118 completed"
+    }
+  ],
+  "invoices": [],
+  "pr": [
+    {
+      "EBELN": "4500018231",
+      "BANFN": "1000200001",
+      "AFNAM": "Sushant",
+      "ERNAM": "SUSHANT"
+    },
+    {
+      "EBELN": "4500018305",
+      "BANFN": "1000200002",
+      "AFNAM": "Sushant",
+      "ERNAM": "SUSHANT"
+    },
+    {
+      "EBELN": "4500018240",
+      "BANFN": "1000200003",
+      "AFNAM": "Sushant",
+      "ERNAM": "SUSHANT"
+    },
+    {
+      "EBELN": "4500018266",
+      "BANFN": "1000200004",
+      "AFNAM": "Sushant",
+      "ERNAM": "SUSHANT"
+    },
+    {
+      "EBELN": "4600004412",
+      "BANFN": "1000200005",
+      "AFNAM": "Sushant",
+      "ERNAM": "SUSHANT"
+    },
+    {
+      "EBELN": "4500018390",
+      "BANFN": "1000200006",
+      "AFNAM": "Sushant",
+      "ERNAM": "SUSHANT"
+    },
+    {
+      "EBELN": "4500017755",
+      "BANFN": "1000200007",
+      "AFNAM": "Sushant",
+      "ERNAM": "SUSHANT"
+    },
+    {
+      "EBELN": "4500018012",
+      "BANFN": "1000200008",
+      "AFNAM": "Sushant",
+      "ERNAM": "SUSHANT"
+    }
+  ],
+  "advances": [
+    {
+      "EBELN": "4500017755",
+      "EBELP": "00010",
+      "AMOUNT": 500000,
+      "BELNR": "1500000412",
+      "BUDAT": "2026-09-01"
+    },
+    {
+      "EBELN": "4500018390",
+      "EBELP": "00010",
+      "AMOUNT": 50000,
+      "BELNR": "1500000430",
+      "BUDAT": "2026-10-01"
+    }
+  ],
+  "tds": [
+    {
+      "LIFNR": "101377",
+      "WITHT": "C2",
+      "WT_WITHCD": "C2",
+      "TEXT": "194C contractor 2%"
+    },
+    {
+      "LIFNR": "100871",
+      "WITHT": "Q1",
+      "WT_WITHCD": "Q1",
+      "TEXT": "194Q purchase of goods 0.1%"
+    }
+  ],
+  "delivery_costs": [
+    {
+      "EBELN": "4500018240",
+      "KSCHL": "FRB1",
+      "LIFNR": "300100",
+      "VENDOR": "Western Roadlines (freight)",
+      "GR_VALUE": 12500,
+      "IR_VALUE": 0,
+      "GR_DOCS": [
+        "5000231203"
+      ],
+      "IR_DOCS": []
+    }
+  ],
+  "shipment_costs": [
+    {
+      "EBELN": "4500018266",
+      "SHIPMENT": "0000001075",
+      "COST_DOC": "0000004410",
+      "ITEM": "000001",
+      "VALUE": 18000,
+      "CURRENCY": "INR",
+      "CARRIER": "300100",
+      "SETTLED": false
+    }
+  ],
+  "guarantees": [
+    {
+      "EBELN": "4500018231",
+      "LIFNR": "100245",
+      "BELNR": "1900000011",
+      "GJAHR": "2026",
+      "TYPE": "BG",
+      "UMSKZ": "G",
+      "AMOUNT": 68500,
+      "CURRENCY": "INR",
+      "VALID_TO": "2027-03-31",
+      "POSTED": "2026-10-05",
+      "REF": "BG/HDFC/2026/0418"
+    }
+  ]
+}

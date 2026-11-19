@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Match Book tab</title>
+<!-- Teams asks this page which Match Book view to pin as a channel or group-chat tab -->
+<script src="https://res.cdn.office.net/teams-js/2.19.0/js/MicrosoftTeams.min.js"></script>
+<style>
+  :root { --fg:#1d2433; --muted:#5b6475; --line:#d9dde6; --brand:#6a2fa8; --bg:#fff; }
+  @media (prefers-color-scheme: dark) { :root { --fg:#e9ecf3; --muted:#a3abbd; --line:#323a4a; --bg:#1f1f1f; } }
+  body { margin:0; padding:24px 16px; font:14px/1.5 "Segoe UI", Roboto, sans-serif; color:var(--fg); background:var(--bg); }
+  h1 { font-size:18px; margin:0 0 4px; }
+  p { color:var(--muted); margin:0 0 16px; }
+  label { display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border:1px solid var(--line); border-radius:8px; margin-bottom:8px; cursor:pointer; }
+  label:has(input:checked) { border-color:var(--brand); }
+  small { display:block; color:var(--muted); }
+</style>
+</head>
+<body>
+<h1>Match Book</h1>
+<p>Matched. Checked. Booked. Pick what this tab shows; everyone signs in with their own Match Book account.</p>
+<form id="f">
+  <label><input type="radio" name="v" value="home" checked><span>My tiles<small>Each person's queue, follow-ups, MSME clock and payments due</small></span></label>
+  <label><input type="radio" name="v" value="monitor"><span>Follow-ups<small>GRN without invoice, advances, late deliveries, usage decisions, due list</small></span></label>
+  <label><input type="radio" name="v" value="dashboard"><span>Dashboard<small>Volumes, touchless rate, reasons for holds</small></span></label>
+  <label><input type="radio" name="v" value="invoices"><span>Invoices<small>All invoices and their status</small></span></label>
+</form>
+<script>
+  const NAMES = { home: "My tiles", monitor: "Follow-ups", dashboard: "Dashboard", invoices: "Invoices" };
+  microsoftTeams.app.initialize().then(() => {
+    microsoftTeams.pages.config.registerOnSaveHandler(save => {
+      const v = document.querySelector("input[name=v]:checked").value;
+      microsoftTeams.pages.config.setConfig({
+        entityId: "matchbook-" + v, suggestedDisplayName: "Match Book · " + NAMES[v],
+        contentUrl: location.origin + "/?teams=1#" + v, websiteUrl: location.origin + "/#" + v,
+      }).then(() => save.notifySuccess(), e => save.notifyFailure(String(e)));
+    });
+    microsoftTeams.pages.config.setValidityState(true);
+  });
+</script>
+</body>
+</html>

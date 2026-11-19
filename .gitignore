@@ -1,0 +1,14 @@
+node_modules/
+.env.local
+data/runtime/
+invoices/
+samples-sap/
+
+dev_rfc.log
+*.log
+
+data/ocr/
+data/dms/
+__pycache__/
+*.pyc
+data/keys/*private*

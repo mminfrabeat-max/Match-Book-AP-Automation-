@@ -1,0 +1,281 @@
+{
+  "appName": "Match Book",
+  "appTagline": "Matched. Checked. Booked.",
+  "orgName": "",
+  "port": 3100,
+  "pollSeconds": 2,
+  "extraction": "auto",
+  "groqModel": "openai/gpt-oss-120b",
+  "claudeModel": "claude-opus-5-5",
+  "autoPark": true,
+  "rateTolerancePct": 1,
+  "taxToleranceInr": 1,
+  "sap": {
+    "autoParkInRealSap": false,
+    "paymentMethod": "C"
+  },
+  "taxCodeSets": {
+    "mock": {
+      "G1": {
+        "type": "CGST+SGST",
+        "rate": 5,
+        "text": "Input CGST+SGST 5% (demo)"
+      },
+      "G2": {
+        "type": "CGST+SGST",
+        "rate": 12,
+        "text": "Input CGST+SGST 12% (demo)"
+      },
+      "G4": {
+        "type": "CGST+SGST",
+        "rate": 18,
+        "text": "Input CGST+SGST 18% (demo)"
+      },
+      "G5": {
+        "type": "CGST+SGST",
+        "rate": 28,
+        "text": "Input CGST+SGST 28% (demo)"
+      },
+      "I1": {
+        "type": "IGST",
+        "rate": 5,
+        "text": "Input IGST 5% (demo)"
+      },
+      "I2": {
+        "type": "IGST",
+        "rate": 12,
+        "text": "Input IGST 12% (demo)"
+      },
+      "I4": {
+        "type": "IGST",
+        "rate": 18,
+        "text": "Input IGST 18% (demo)"
+      },
+      "I5": {
+        "type": "IGST",
+        "rate": 28,
+        "text": "Input IGST 28% (demo)"
+      }
+    },
+    "rfc": {
+      "T2": {
+        "type": "IGST",
+        "rate": 18,
+        "text": "Input IGST 18%"
+      },
+      "SS": {
+        "type": "IGST",
+        "rate": 5,
+        "text": "Input IGST 5%"
+      },
+      "S2": {
+        "type": "IGST",
+        "rate": 0,
+        "text": "Input IGST 0%"
+      },
+      "S0": {
+        "type": "CGST+SGST",
+        "rate": 0,
+        "text": "Input CGST and SGST 0%"
+      },
+      "V0": {
+        "type": null,
+        "rate": 0,
+        "text": "Input tax 0%"
+      },
+      "T1": {
+        "type": "CGST+SGST",
+        "rate": 18,
+        "text": "Input CGST 9% + SGST 9%"
+      }
+    }
+  },
+  "criticalFields": [
+    "vendor_gstin",
+    "invoice_no",
+    "invoice_date",
+    "po_no",
+    "taxable_value",
+    "total"
+  ],
+  "confidenceThreshold": 0.9,
+  "overridableChecks": [
+    1,
+    12,
+    13,
+    17,
+    23,
+    26
+  ],
+  "learning": {
+    "autoAcceptAfter": 3,
+    "correctAfter": 3,
+    "learnableChecks": [
+      2,
+      12,
+      13,
+      14,
+      18,
+      20,
+      24
+    ]
+  },
+  "monitor": {
+    "days": 180,
+    "grirDays": 7,
+    "everyMinutes": 60
+  },
+  "syncMinutes": 5,
+  "auth": {
+    "initialPassword": "Welcome@1234",
+    "showDemoAccounts": true,
+    "sessionHours": 8,
+    "maxFailures": 5,
+    "lockMinutes": 10
+  },
+  "people": [
+    {
+      "id": "PRIYA",
+      "name": "Priya Kulkarni",
+      "roles": [
+        "AP"
+      ],
+      "email": "priya.kulkarni@example.com",
+      "manager": "APCTRL",
+      "desk": "Materials"
+    },
+    {
+      "id": "RAHUL",
+      "name": "Rahul Deshmukh",
+      "roles": [
+        "AP"
+      ],
+      "email": "rahul.deshmukh@example.com",
+      "manager": "APCTRL",
+      "desk": "Services"
+    },
+    {
+      "id": "KAVITA",
+      "name": "Kavita Joshi",
+      "roles": [
+        "AP"
+      ],
+      "email": "kavita.joshi@example.com",
+      "manager": "APCTRL",
+      "desk": "MSME"
+    },
+    {
+      "id": "APCTRL",
+      "name": "Meera Iyer",
+      "roles": [
+        "AP_CONTROLLER"
+      ],
+      "email": "ap.controller@example.com",
+      "desk": "AP Controller"
+    },
+    {
+      "id": "AJADHAV",
+      "name": "Atul Jadhav",
+      "roles": [
+        "BUYER"
+      ],
+      "email": "atul.jadhav@example.com",
+      "manager": "BHARATM",
+      "desk": "Commercial / Purchase"
+    },
+    {
+      "id": "BHARATM",
+      "name": "Bharat M.",
+      "roles": [
+        "MANAGER"
+      ],
+      "email": "bharat.m@example.com",
+      "desk": "Purchase manager"
+    },
+    {
+      "id": "SUSHANT",
+      "name": "Sushant",
+      "roles": [
+        "REQUESTOR"
+      ],
+      "email": "sushant@example.com",
+      "manager": "ASHOKM",
+      "desk": "User department"
+    },
+    {
+      "id": "ASHOKM",
+      "name": "Ashok M.",
+      "roles": [
+        "MANAGER"
+      ],
+      "email": "ashok.m@example.com",
+      "desk": "User department manager"
+    },
+    {
+      "id": "QCLAB",
+      "name": "QC Department",
+      "roles": [
+        "QC"
+      ],
+      "email": "qc@example.com",
+      "desk": "Quality"
+    },
+    {
+      "id": "STORES",
+      "name": "Store / Gate",
+      "roles": [
+        "STORES"
+      ],
+      "email": "stores@example.com",
+      "desk": "Stores"
+    }
+  ],
+  "routing": [
+    {
+      "match": {
+        "category": "SERVICE"
+      },
+      "to": "RAHUL"
+    },
+    {
+      "match": {
+        "category": "MSME"
+      },
+      "to": "KAVITA"
+    }
+  ],
+  "routingDefault": "PRIYA",
+  "org": {
+    "companyCodes": {
+      "1000": "Company 1000",
+      "1100": "S4T test",
+      "2000": "Company 2000",
+      "3000": "Company 3000",
+      "4000": "Demo company"
+    },
+    "plants": {
+      "4010": "Taloja K1",
+      "4020": "Dahej"
+    }
+  },
+  "einvoice": {
+    "publicKeys": [
+      {
+        "label": "NIC e-invoice portal (production)",
+        "file": "data/keys/nic-einvoice-public.pem"
+      },
+      {
+        "label": "Demo IRP key (test PDFs only)",
+        "file": "data/keys/demo-irp-public.pem"
+      }
+    ]
+  },
+  "jms": {
+    "servicePOs": true,
+    "pattern": "\\bJMS\\b|joint\\s+measurement",
+    "missingStatus": "BLOCK",
+    "_note": "DFPCL has no standard SAP field for JMS: replace this rule once they name theirs"
+  },
+  "bgMissingStatus": "WARN",
+  "stampNotNeededWhenDigital": true
+}

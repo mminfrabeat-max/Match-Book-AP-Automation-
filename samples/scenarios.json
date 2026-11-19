@@ -1,0 +1,30 @@
+[
+  {
+    "file": "S01_VishwaCarbon_VC-26-27-0412.pdf",
+    "scenario": "Clean e-invoice, 3-way match OK"
+  },
+  {
+    "file": "S02_ShreeGanesh_SGE-1187.pdf",
+    "scenario": "Invoice qty 120 > GRN qty 100"
+  },
+  {
+    "file": "S03_ApexChemicals_APX-2026-5521.pdf",
+    "scenario": "Quality usage decision rejected"
+  },
+  {
+    "file": "S04_scan_0042.pdf",
+    "scenario": "Duplicate of S01 (re-sent scan, number written without leading zero)"
+  },
+  {
+    "file": "S05_SaiPackaging_SPI-GJ-0907.pdf",
+    "scenario": "Ship-to GSTIN (Dahej) does not match PO plant (Taloja)"
+  },
+  {
+    "file": "S06_OmSaiFabricators_OSF-26-118.pdf",
+    "scenario": "MSME service invoice, SES released, JMS done"
+  },
+  {
+    "file": "S07_KaveriPumps_KPV-26-0412.pdf",
+    "scenario": "Stamp and signature missing"
+  }
+]

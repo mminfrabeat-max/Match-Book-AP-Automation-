@@ -1,0 +1,71 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.17/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.17",
+  "version": "1.0.96529",
+  "id": "3e5bacac-5049-43ea-af34-9602d2ba194a",
+  "developer": {
+    "name": "InfraBeat",
+    "websiteUrl": "https://example-3100.inc1.devtunnels.ms",
+    "privacyUrl": "https://example-3100.inc1.devtunnels.ms",
+    "termsOfUseUrl": "https://example-3100.inc1.devtunnels.ms"
+  },
+  "name": {
+    "short": "Match Book",
+    "full": "Match Book - AP invoice agents"
+  },
+  "description": {
+    "short": "Matched. Checked. Booked. Your AP invoice tiles in Teams.",
+    "full": "Match Book reads vendor invoices, checks them against SAP (PO, GRN, quality, GST, MSME) and parks them in MIRO. In Teams each person sees their own tiles: invoice queue, GRNs waiting for invoices, open advances, usage decisions, the MSME clock and payments due."
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "accentColor": "#6A2FA8",
+  "staticTabs": [
+    {
+      "entityId": "home",
+      "name": "My tiles",
+      "contentUrl": "https://example-3100.inc1.devtunnels.ms/?teams=1#home",
+      "websiteUrl": "https://example-3100.inc1.devtunnels.ms/#home",
+      "scopes": [
+        "personal"
+      ]
+    },
+    {
+      "entityId": "invoices",
+      "name": "Invoices",
+      "contentUrl": "https://example-3100.inc1.devtunnels.ms/?teams=1#invoices",
+      "websiteUrl": "https://example-3100.inc1.devtunnels.ms/#invoices",
+      "scopes": [
+        "personal"
+      ]
+    },
+    {
+      "entityId": "monitor",
+      "name": "Follow-ups",
+      "contentUrl": "https://example-3100.inc1.devtunnels.ms/?teams=1#monitor",
+      "websiteUrl": "https://example-3100.inc1.devtunnels.ms/#monitor",
+      "scopes": [
+        "personal"
+      ]
+    }
+  ],
+  "configurableTabs": [
+    {
+      "configurationUrl": "https://example-3100.inc1.devtunnels.ms/teams-config.html",
+      "canUpdateConfiguration": true,
+      "scopes": [
+        "team",
+        "groupChat"
+      ]
+    }
+  ],
+  "permissions": [
+    "identity"
+  ],
+  "validDomains": [
+    "example-3100.inc1.devtunnels.ms"
+  ],
+  "showLoadingIndicator": false
+}
